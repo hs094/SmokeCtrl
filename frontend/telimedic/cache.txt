@@ -1,0 +1,43 @@
+Future<PersonModel> registerPerson(
+    String loginId,
+    String userId,
+    String pwd,
+    String name,
+    int age,
+    String sex,
+    String phoneNo,
+    String email,
+    String designation,
+    String qualification,
+    String userType,
+    String active,
+    BuildContext context) async {
+  var response = await http.post(urlRegisterPerson as Uri,
+      headers: <String, String>{"Content-Type": "application/json"},
+      body: jsonEncode(<String, dynamic>{
+        "loginId": loginId,
+        "userId": userId,
+        "pwd": pwd,
+        "name": name,
+        "age": age,
+        "sex": sex,
+        "phoneNo": phoneNo,
+        "email": email,
+        "designation": designation,
+        "qualification": qualification,
+        "userType": userType,
+        "active": active
+      }));
+
+  if (response.statusCode == 200) {
+    if (kDebugMode) {
+      print('Backend Response');
+      print(response.body);
+    }
+    // Assuming the backend response body is in JSON format and contains the person data
+    return PersonModel.fromJson(jsonDecode(response.body));
+  } else {
+    // Handle error case
+    throw Exception('Failed to register person');
+  }
+}
