@@ -1,43 +1,144 @@
-Future<PersonModel> registerPerson(
-    String loginId,
-    String userId,
-    String pwd,
-    String name,
-    int age,
-    String sex,
-    String phoneNo,
-    String email,
-    String designation,
-    String qualification,
-    String userType,
-    String active,
-    BuildContext context) async {
-  var response = await http.post(urlRegisterPerson as Uri,
-      headers: <String, String>{"Content-Type": "application/json"},
-      body: jsonEncode(<String, dynamic>{
-        "loginId": loginId,
-        "userId": userId,
-        "pwd": pwd,
-        "name": name,
-        "age": age,
-        "sex": sex,
-        "phoneNo": phoneNo,
-        "email": email,
-        "designation": designation,
-        "qualification": qualification,
-        "userType": userType,
-        "active": active
-      }));
-
-  if (response.statusCode == 200) {
-    if (kDebugMode) {
-      print('Backend Response');
-      print(response.body);
-    }
-    // Assuming the backend response body is in JSON format and contains the person data
-    return PersonModel.fromJson(jsonDecode(response.body));
-  } else {
-    // Handle error case
-    throw Exception('Failed to register person');
-  }
-}
+[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Unable to load asset: "assets/svg/thermometer.svg".
+The asset does not exist or has empty data.
+#0      PlatformAssetBundle.load.<anonymous closure> (package:flutter/src/services/asset_bundle.dart:327:9)
+<asynchronous suspension>
+#1      SvgLoader._load.<anonymous closure> (package:flutter_svg/src/loaders.dart:153:41)
+<asynchronous suspension>
+#2      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:355:40)
+<asynchronous suspension>
+#3      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:369:13)
+<asynchronous suspension>
+#4      _VectorGraphicWidgetState._loadAssetBytes.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:402:45)
+<asynchronous suspension>
+[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Unable to load asset: "assets/svg/thermometer.svg".
+The asset does not exist or has empty data.
+#0      PlatformAssetBundle.load.<anonymous closure> (package:flutter/src/services/asset_bundle.dart:327:9)
+<asynchronous suspension>
+#1      SvgLoader._load.<anonymous closure> (package:flutter_svg/src/loaders.dart:153:41)
+<asynchronous suspension>
+#2      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:355:40)
+<asynchronous suspension>
+#3      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:369:13)
+<asynchronous suspension>
+#4      _VectorGraphicWidgetState._loadAssetBytes.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:402:45)
+<asynchronous suspension>
+[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Unable to load asset: "assets/svg/thermometer.svg".
+The asset does not exist or has empty data.
+#0      PlatformAssetBundle.load.<anonymous closure> (package:flutter/src/services/asset_bundle.dart:327:9)
+<asynchronous suspension>
+#1      SvgLoader._load.<anonymous closure> (package:flutter_svg/src/loaders.dart:153:41)
+<asynchronous suspension>
+#2      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:355:40)
+<asynchronous suspension>
+#3      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:369:13)
+<asynchronous suspension>
+#4      _VectorGraphicWidgetState._loadAssetBytes.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:402:45)
+<asynchronous suspension>
+[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Unable to load asset: "assets/svg/wind.svg".
+The asset does not exist or has empty data.
+#0      PlatformAssetBundle.load.<anonymous closure> (package:flutter/src/services/asset_bundle.dart:327:9)
+<asynchronous suspension>
+#1      SvgLoader._load.<anonymous closure> (package:flutter_svg/src/loaders.dart:153:41)
+<asynchronous suspension>
+#2      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:355:40)
+<asynchronous suspension>
+#3      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:369:13)
+<asynchronous suspension>
+#4      _VectorGraphicWidgetState._loadAssetBytes.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:402:45)
+<asynchronous suspension>
+[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Unable to load asset: "assets/svg/wind.svg".
+The asset does not exist or has empty data.
+#0      PlatformAssetBundle.load.<anonymous closure> (package:flutter/src/services/asset_bundle.dart:327:9)
+<asynchronous suspension>
+#1      SvgLoader._load.<anonymous closure> (package:flutter_svg/src/loaders.dart:153:41)
+<asynchronous suspension>
+#2      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:355:40)
+<asynchronous suspension>
+#3      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:369:13)
+<asynchronous suspension>
+#4      _VectorGraphicWidgetState._loadAssetBytes.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:402:45)
+<asynchronous suspension>
+[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Unable to load asset: "assets/svg/wind.svg".
+The asset does not exist or has empty data.
+#0      PlatformAssetBundle.load.<anonymous closure> (package:flutter/src/services/asset_bundle.dart:327:9)
+<asynchronous suspension>
+#1      SvgLoader._load.<anonymous closure> (package:flutter_svg/src/loaders.dart:153:41)
+<asynchronous suspension>
+#2      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:355:40)
+<asynchronous suspension>
+#3      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:369:13)
+<asynchronous suspension>
+#4      _VectorGraphicWidgetState._loadAssetBytes.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:402:45)
+<asynchronous suspension>
+[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Unable to load asset: "assets/svg/soil.svg".
+The asset does not exist or has empty data.
+#0      PlatformAssetBundle.load.<anonymous closure> (package:flutter/src/services/asset_bundle.dart:327:9)
+<asynchronous suspension>
+#1      SvgLoader._load.<anonymous closure> (package:flutter_svg/src/loaders.dart:153:41)
+<asynchronous suspension>
+#2      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:355:40)
+<asynchronous suspension>
+#3      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:369:13)
+<asynchronous suspension>
+#4      _VectorGraphicWidgetState._loadAssetBytes.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:402:45)
+<asynchronous suspension>
+[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Unable to load asset: "assets/svg/soil.svg".
+The asset does not exist or has empty data.
+#0      PlatformAssetBundle.load.<anonymous closure> (package:flutter/src/services/asset_bundle.dart:327:9)
+<asynchronous suspension>
+#1      SvgLoader._load.<anonymous closure> (package:flutter_svg/src/loaders.dart:153:41)
+<asynchronous suspension>
+#2      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:355:40)
+<asynchronous suspension>
+#3      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:369:13)
+<asynchronous suspension>
+#4      _VectorGraphicWidgetState._loadAssetBytes.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:402:45)
+<asynchronous suspension>
+[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Unable to load asset: "assets/svg/soil.svg".
+The asset does not exist or has empty data.
+#0      PlatformAssetBundle.load.<anonymous closure> (package:flutter/src/services/asset_bundle.dart:327:9)
+<asynchronous suspension>
+#1      SvgLoader._load.<anonymous closure> (package:flutter_svg/src/loaders.dart:153:41)
+<asynchronous suspension>
+#2      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:355:40)
+<asynchronous suspension>
+#3      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:369:13)
+<asynchronous suspension>
+#4      _VectorGraphicWidgetState._loadAssetBytes.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:402:45)
+<asynchronous suspension>
+[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Unable to load asset: "assets/svg/sun.svg".
+The asset does not exist or has empty data.
+#0      PlatformAssetBundle.load.<anonymous closure> (package:flutter/src/services/asset_bundle.dart:327:9)
+<asynchronous suspension>
+#1      SvgLoader._load.<anonymous closure> (package:flutter_svg/src/loaders.dart:153:41)
+<asynchronous suspension>
+#2      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:355:40)
+<asynchronous suspension>
+#3      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:369:13)
+<asynchronous suspension>
+#4      _VectorGraphicWidgetState._loadAssetBytes.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:402:45)
+<asynchronous suspension>
+[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Unable to load asset: "assets/svg/sun.svg".
+The asset does not exist or has empty data.
+#0      PlatformAssetBundle.load.<anonymous closure> (package:flutter/src/services/asset_bundle.dart:327:9)
+<asynchronous suspension>
+#1      SvgLoader._load.<anonymous closure> (package:flutter_svg/src/loaders.dart:153:41)
+<asynchronous suspension>
+#2      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:355:40)
+<asynchronous suspension>
+#3      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:369:13)
+<asynchronous suspension>
+#4      _VectorGraphicWidgetState._loadAssetBytes.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:402:45)
+<asynchronous suspension>
+[ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Unable to load asset: "assets/svg/sun.svg".
+The asset does not exist or has empty data.
+#0      PlatformAssetBundle.load.<anonymous closure> (package:flutter/src/services/asset_bundle.dart:327:9)
+<asynchronous suspension>
+#1      SvgLoader._load.<anonymous closure> (package:flutter_svg/src/loaders.dart:153:41)
+<asynchronous suspension>
+#2      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:355:40)
+<asynchronous suspension>
+#3      _VectorGraphicWidgetState._loadPicture.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:369:13)
+<asynchronous suspension>
+#4      _VectorGraphicWidgetState._loadAssetBytes.<anonymous closure> (package:vector_graphics/src/vector_graphics.dart:402:45)
+<asynchronous suspension>

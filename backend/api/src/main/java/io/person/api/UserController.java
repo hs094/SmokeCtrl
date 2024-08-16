@@ -6,19 +6,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-
 public class UserController {
 
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/register")
     public User Register(@RequestBody User user) {
-        return userRepository.save(user);
+        return userService.saveUser(user);
     }
-   @PostMapping("/login")
-   public User Login(@RequestBody User user) {
-       User oldUSer = userRepository.findByEmailAndPassword(user.email, user.password);
-       return oldUSer;
-   }
+
+    @PostMapping("/login")
+    public User Login(@RequestBody User user) {
+        User oldUSer = userRepository.findByEmailAndPwd(user.getEmail(), user.getPassword());
+        return oldUSer;
+    }
 }

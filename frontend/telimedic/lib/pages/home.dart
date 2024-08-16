@@ -14,11 +14,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool isSignInDialogShown = false;
-  late RiveAnimationController _btnAnimationController;
 
   @override
   void initState() {
-    _btnAnimationController = OneShotAnimation("active", autoplay: false);
     super.initState();
   }
 

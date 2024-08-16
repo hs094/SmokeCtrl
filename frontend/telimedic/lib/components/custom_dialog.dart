@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:telemedic/components/sign_in_form.dart';
 import 'package:telemedic/components/sign_up_form.dart';
 
 Future<Object?> customSigninDialog(BuildContext context, {required ValueChanged onClosed}) {
-  final Box boxLogin = Hive.box("login");
   final GlobalKey<FormState> formKey = GlobalKey();
 
   return showGeneralDialog(
@@ -108,7 +106,6 @@ Future<Object?> customSigninDialog(BuildContext context, {required ValueChanged 
 }
 
 Future<Object?> customSignUpDialog(BuildContext context, {required ValueChanged onClosed}) {
-  final Box boxLogin = Hive.box("login");
   final GlobalKey<FormState> formKey = GlobalKey();
   return showGeneralDialog(
     barrierDismissible: true,

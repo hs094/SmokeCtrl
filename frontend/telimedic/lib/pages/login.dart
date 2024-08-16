@@ -2,9 +2,22 @@ import 'package:animate_do/animate_do.dart';
 import 'package:telemedic/pages/home.dart';
 import 'package:telemedic/pages/signup.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:telemedic/pages/dashboard.dart';
+import 'package:http/http.dart' as http;
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController pwdController = TextEditingController();
+  bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +29,14 @@ class LoginPage extends StatelessWidget {
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const HomePage()));
           },
-          icon: const Icon(Icons.arrow_back_ios, size: 20, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            size: 20,
+            color: Colors.black,
+          ),
         ),
       ),
       body: SizedBox(
@@ -33,116 +51,209 @@ class LoginPage extends StatelessWidget {
                 children: <Widget>[
                   Column(
                     children: <Widget>[
-                      FadeInUp(duration: const Duration(milliseconds: 1000), child: const Text("Login", style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold
-                      ),)),
-                      const SizedBox(height: 20,),
-                      FadeInUp(duration: const Duration(milliseconds: 1200), child: Text("Login to your account", style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey[700]
-                      ),)),
+                      FadeInUp(
+                          duration: const Duration(milliseconds: 1000),
+                          child: const Text(
+                            "Login",
+                            style: TextStyle(
+                                fontSize: 30, fontWeight: FontWeight.bold),
+                          )),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      FadeInUp(
+                          duration: const Duration(milliseconds: 1200),
+                          child: Text(
+                            "Login to your account",
+                            style: TextStyle(
+                                fontSize: 15, color: Colors.grey[700]),
+                          )),
                     ],
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 40),
                     child: Column(
                       children: <Widget>[
-                        FadeInUp(duration: const Duration(milliseconds: 1200), child: makeInput(label: "Email")),
-                        FadeInUp(duration: const Duration(milliseconds: 1300), child: makeInput(label: "Password", obscureText: true)),
+                        FadeInUp(
+                          duration: const Duration(milliseconds: 1200),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              TextFormField(
+                                controller: emailController,
+                                decoration: InputDecoration(
+                                  // border: OutlineInputBorder(),
+                                  labelText: 'Email',
+                                  hintText: 'Enter your Email',
+                                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.grey.shade400),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.grey.shade400),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
+                        ),
+                        FadeInUp(
+                            duration: const Duration(milliseconds: 1300),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                TextFormField(
+                                  controller: pwdController, // Assign the controller here
+                                  obscureText: _obscurePassword,
+                                  decoration: InputDecoration(
+                                    labelText: 'Password',
+                                    hintText: 'Enter your Password',
+                                    suffixIcon: IconButton(
+                                      icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off,),
+                                      onPressed: () {setState(() {_obscurePassword = !_obscurePassword;});},
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.grey.shade400),
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.grey.shade400),
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter your password';
+                                    }
+                                    if (value.length < 6) {
+                                      return 'Password must be at least 6 characters long';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            ),
+                        )
+                        // FadeInUp(duration: const Duration(milliseconds: 1300), child: makeInput(label: "Password", obscureText: true)),
                       ],
                     ),
                   ),
-                  FadeInUp(duration: const Duration(milliseconds: 1400), child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: Container(
-                      padding: const EdgeInsets.only(top: 3, left: 3),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          border: const Border(
-                            bottom: BorderSide(color: Colors.black),
-                            top: BorderSide(color: Colors.black),
-                            left: BorderSide(color: Colors.black),
-                            right: BorderSide(color: Colors.black),
-                          )
-                      ),
-                      child: MaterialButton(
-                        minWidth: double.infinity,
-                        height: 60,
-                        onPressed: () {},
-                        color: Colors.greenAccent,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50)
+                  FadeInUp(
+                      duration: const Duration(milliseconds: 1400),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 3, left: 3),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              border: const Border(
+                                bottom: BorderSide(color: Colors.black),
+                                top: BorderSide(color: Colors.black),
+                                left: BorderSide(color: Colors.black),
+                                right: BorderSide(color: Colors.black),
+                              )),
+                          child: MaterialButton(
+                            minWidth: double.infinity,
+                            height: 60,
+                            onPressed: () {
+                              loginUser(context, emailController.text, pwdController.text);
+                            },
+                            color: Colors.greenAccent,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50)),
+                            child: const Text(
+                              "Login",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 18),
+                            ),
+                          ),
                         ),
-                        child: const Text("Login", style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18
-                        ),),
-                      ),
-                    ),
-                  )),
-                  FadeInUp(duration: const Duration(milliseconds: 1500), child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      const Text("Don't have an account?"),
-                      Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const SignupPage()),
-                            );
-                          },
-                          child: const Text("  Sign up", style: TextStyle(
-                              fontWeight: FontWeight.w700, fontSize: 16
-                          ),),
-                        ),
-                      ),
-                    ],
-                  ))
+                      )),
+                  FadeInUp(
+                      duration: const Duration(milliseconds: 1500),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          const Text("Don't have an account?"),
+                          Center(
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const SignupPage()),
+                                );
+                              },
+                              child: const Text(
+                                "  Sign up",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w700, fontSize: 16),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ))
                 ],
               ),
             ),
-            FadeInUp(duration: const Duration(milliseconds: 1200), child: Container(
-              height: MediaQuery.of(context).size.height / 3,
-              decoration: const BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage('assets/Backgrounds/background.png'),
-                      fit: BoxFit.cover
-                  )
-              ),
-            ))
+            FadeInUp(
+                duration: const Duration(milliseconds: 1200),
+                child: Container(
+                  height: MediaQuery.of(context).size.height / 3,
+                  decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage('assets/Backgrounds/background.png'),
+                          fit: BoxFit.cover)),
+                ))
           ],
         ),
       ),
     );
   }
 
-  Widget makeInput({label, obscureText = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(label, style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w400,
-            color: Colors.black87
-        ),),
-        const SizedBox(height: 5,),
-        TextField(
-          obscureText: obscureText,
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey.shade400)
-            ),
-            border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey.shade400)
-            ),
+  Future<http.Response> loginUser(BuildContext context, String email, String pwd) async {
+    var uri = Uri.parse("http://localhost:8080/login");
+    Map<String, String> headers = {"Content-Type": "application/json"};
+    var body = json.encode({
+      'email': email,
+      'password': pwd,
+    });
+
+    if (kDebugMode) {
+      print("**************************   REQUEST   **************************");
+      print(body);
+      print("*****************************************************************");
+    }
+
+    var response = await http.post(uri, headers: headers, body: body);
+
+    if (kDebugMode) {
+      print('');
+      print("**************************   RESPONSE   **************************");
+      print(response.body);
+      print("******************************************************************");
+    }
+
+    if (response.statusCode == 200) {
+      // Check if the widget is still mounted before navigating
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DashBoard(),
           ),
-        ),
-        const SizedBox(height: 30,),
-      ],
-    );
+        );
+      }
+    } else {
+      // Handle error (e.g., show a message to the user)
+      if (kDebugMode) {
+        print("Login failed with status code: ${response.statusCode}");
+      }
+    }
+
+    return response;
   }
+
 }

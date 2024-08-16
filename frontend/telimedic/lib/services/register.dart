@@ -10,15 +10,15 @@ class RegisterUser {
     Map<String, String> headers = {"Content-Type": "application/json"};
     var body = json.encode({
       'email': user.email,
-      'password': user.pwd,
+      'pwd': user.pwd,
       'loginid': user.loginid,
       'name': user.name,
       'age': user.age,
       'sex': user.sex,
       'phone': user.phone,
-      'desgn': user.desgn,
-      'qual': user.qual,
-      'usertype': user.usertype,
+      'designation': user.designation,
+      'qualification': user.qualification,
+      'user_type': user.user_type,
       'active': user.active,
     });
     if (kDebugMode) {

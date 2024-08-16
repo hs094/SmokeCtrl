@@ -23,7 +23,7 @@ class _SignupPageState extends State<SignupPage> {
   TextEditingController phoneController = TextEditingController();
   int _age = 18;
   bool activeController = false;
-  TextEditingController userController = TextEditingController(text: 'P');
+  TextEditingController userController = TextEditingController(text: 'pat');
   TextEditingController pwdController = TextEditingController();
   TextEditingController confirmPwdController = TextEditingController();
   TextEditingController desgnController = TextEditingController();
@@ -147,8 +147,7 @@ class _SignupPageState extends State<SignupPage> {
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                                width: 10), // Add space between the two fields
+                            const SizedBox(width: 10), // Add space between the two fields
                             Expanded(
                               child: FadeInUp(
                                 duration: const Duration(milliseconds: 1400),
@@ -311,9 +310,10 @@ class _SignupPageState extends State<SignupPage> {
                                 ),
                               ),
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
                                   Radio<String>(
-                                    value: 'P',
+                                    value: 'pat',
                                     groupValue: userController.text,
                                     onChanged: (value) {
                                       setState(() {
@@ -322,8 +322,9 @@ class _SignupPageState extends State<SignupPage> {
                                     },
                                   ),
                                   const Text("Patient"),
+                                  const SizedBox(width: 12),
                                   Radio<String>(
-                                    value: 'D',
+                                    value: 'doc',
                                     groupValue: userController.text,
                                     onChanged: (value) {
                                       setState(() {
@@ -332,8 +333,9 @@ class _SignupPageState extends State<SignupPage> {
                                     },
                                   ),
                                   const Text("Doctor"),
+                                  const SizedBox(width: 12),
                                   Radio<String>(
-                                    value: 'A',
+                                    value: 'adm',
                                     groupValue: userController.text,
                                     onChanged: (value) {
                                       setState(() {
@@ -342,9 +344,10 @@ class _SignupPageState extends State<SignupPage> {
                                     },
                                   ),
                                   const Text("Admin"),
+                                  const SizedBox(width: 12),
                                 ],
                               ),
-                              if (userController.text != 'P') ...[
+                              if (userController.text != 'pat') ...[
                                 Row(
                                   children: [
                                     Expanded(
@@ -392,7 +395,7 @@ class _SignupPageState extends State<SignupPage> {
                                   ],
                                 ),
                               ],
-                              const SizedBox(height: 5),
+                              // const SizedBox(height: 5),
                             ],
                           ),
                         ),
@@ -541,10 +544,16 @@ class _SignupPageState extends State<SignupPage> {
                     MaterialButton(
                       minWidth: double.infinity,
                       height: 60,
-                      onPressed: () {
+                      onPressed: () async {
                         if (kDebugMode) {
                           User user = User(loginIdController.text, pwdController.text, nameController.text, _age, genderController.text, phoneController.text, emailController.text, desgnController.text, qualController!, userController.text, activeController);
-                          service.saveUser(user);
+                          var response = await service.saveUser(user);
+                          if(response.statusCode == 200) {
+
+                          }
+                          else {
+                            
+                          }
                         }
                       },
                       color: Colors.greenAccent,
@@ -586,35 +595,5 @@ class _SignupPageState extends State<SignupPage> {
             ),
           ),
         ]));
-  }
-
-  Widget makeInput({required String label, bool obscureText = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          label,
-          style: const TextStyle(
-              fontSize: 15, fontWeight: FontWeight.w400, color: Colors.black87),
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        TextField(
-          obscureText: obscureText,
-          decoration: InputDecoration(
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey.shade400)),
-            border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey.shade400)),
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-      ],
-    );
   }
 }

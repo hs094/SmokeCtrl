@@ -8,9 +8,20 @@ class User {
   String sex;
   String phone;
   String email;
-  String desgn;
-  String qual;
-  String usertype;
+  String designation;
+  String qualification;
+  String user_type;
   bool active;
-  User(this.loginid, this.pwd, this.name, this.age, this.sex, this.phone, this.email, this.desgn, this.qual, this.usertype, this.active);
+  User(
+      this.loginid,
+      this.pwd,
+      this.name,
+      this.age,
+      this.sex,
+      this.phone,
+      this.email,
+      this.designation,
+      this.qualification,
+      this.user_type,
+      this.active);
 }

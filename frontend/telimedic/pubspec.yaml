@@ -12,13 +12,16 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   cupertino_icons: ^1.0.2
-  http: ^0.13.5
-  rive: ^0.9.1
-  flutter_svg: ^1.1.6
+  http: ^1.2.2
+  rive: ^0.13.4
+  flutter_svg: ^2.0.10+1
+  animated_text_kit: ^4.2.1
 
   animate_do: any
   flutter_animate: any
   intl: any
+  fl_chart: any
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -28,10 +31,15 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/avaters/
+    - assets/avatars/
     - assets/Backgrounds/
+    - assets/Fonts/
     - assets/icons/
     - assets/RiveAssets/
+    - assets/shapes/
+    - assets/icon/
+    - assets/images/
+    - assets/svg/
 
   fonts:
     - family: Intel
