@@ -1,6 +1,8 @@
 package io.person.api;
-
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,13 +17,16 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public User Register(@RequestBody User user) {
+    public List<String> Register(@RequestBody User user) {
         return userService.saveUser(user);
     }
 
     @PostMapping("/login")
-    public User Login(@RequestBody User user) {
-        User oldUSer = userRepository.findByEmailAndPwd(user.getEmail(), user.getPassword());
-        return oldUSer;
+    public ResponseEntity<User> login(@RequestBody User user) {
+        User oldUser = userRepository.findByLoginidAndPwd(user.getLoginid(), user.getPwd());
+        if (oldUser == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(oldUser, HttpStatus.OK);
     }
 }

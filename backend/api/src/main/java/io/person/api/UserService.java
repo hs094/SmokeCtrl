@@ -3,7 +3,7 @@ package io.person.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -17,7 +17,14 @@ public class UserService {
     private RegStatsRepository regStatsRepository;
 
     @Transactional
-    public User saveUser(User user) {
+    public List<String> saveUser(User user) {
+        List<String> response = new ArrayList<>();
+        if (userRepository.findByLoginid(user.getLoginid()) != null) {
+            response.add("409");
+            response.add("Error !");
+            response.add("A user with the same loginid already exists.");
+            return response;
+        }
         LocalDate today = LocalDate.now();
         RegStats stats = regStatsRepository.findById("latest").orElse(new RegStats());
         
@@ -31,6 +38,10 @@ public class UserService {
         regStatsRepository.save(stats);
         String userid = today.format(DateTimeFormatter.ofPattern("ddMMyyyy")) + "_" + stats.getCount();
         user.setUserid(userid);
-        return userRepository.save(user);
+        userRepository.save(user);
+        response.add("200");
+        response.add("Success !");
+        response.add("User Successfully registered with ID: " + userid + ".");
+        return response;
     }
 }

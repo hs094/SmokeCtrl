@@ -4,18 +4,21 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:telemedic/widgets/header_widget.dart';
 import 'package:telemedic/utils/responsive.dart';
+import 'package:telemedic/models/user.dart';
 import 'package:telemedic/widgets/activity_details_card.dart';
 import 'package:telemedic/widgets/bar_graph_card.dart';
 import 'package:telemedic/widgets/line_chart_card.dart';
 
 class HomePage extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
-
-  const HomePage({super.key, required this.scaffoldKey});
+  final User user;
+  const HomePage({super.key, required this.scaffoldKey, required this.user});
 
   @override
   Widget build(BuildContext context) {
-    SizedBox _height(BuildContext context) => SizedBox(height: Responsive.isDesktop(context) ? 30 : 20,);
+    SizedBox _height(BuildContext context) => SizedBox(
+          height: Responsive.isDesktop(context) ? 30 : 20,
+        );
 
     return SizedBox(
         height: MediaQuery.of(context).size.height,
@@ -40,7 +43,7 @@ class HomePage extends StatelessWidget {
                 child: AnimatedTextKit(
                   animatedTexts: [
                     TypewriterAnimatedText(
-                      'Welcome Administrator !',
+                      'Welcome ${convertRole(user.user_type)} !',
                       speed: const Duration(milliseconds: 100),
                       cursor: ' _',
                     ),
@@ -57,5 +60,15 @@ class HomePage extends StatelessWidget {
             ],
           ),
         )));
+  }
+
+  String convertRole(String s) {
+    if (s == "adm") {
+      return "Administrator";
+    } else if (s == "doc") {
+      return "Doctor";
+    } else {
+      return "Patient";
+    }
   }
 }

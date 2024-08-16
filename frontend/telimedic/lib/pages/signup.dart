@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:telemedic/pages/home.dart';
 import 'package:telemedic/utils/constants.dart';
@@ -5,6 +7,7 @@ import 'package:telemedic/services/register.dart';
 import 'package:flutter/foundation.dart';
 import 'package:telemedic/pages/login.dart';
 import 'package:telemedic/models/user.dart';
+import 'package:telemedic/utils/helper_func.dart';
 import 'package:flutter/material.dart';
 
 class SignupPage extends StatefulWidget {
@@ -29,6 +32,7 @@ class _SignupPageState extends State<SignupPage> {
   TextEditingController desgnController = TextEditingController();
   String? qualController;
   RegisterUser service = RegisterUser();
+  HelperFunc helper = HelperFunc();
 
   @override
   void initState() {
@@ -50,7 +54,8 @@ class _SignupPageState extends State<SignupPage> {
           backgroundColor: Colors.white,
           leading: IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const HomePage()));
             },
             icon: const Icon(
               Icons.arrow_back_ios,
@@ -147,7 +152,8 @@ class _SignupPageState extends State<SignupPage> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 10), // Add space between the two fields
+                            const SizedBox(
+                                width: 10), // Add space between the two fields
                             Expanded(
                               child: FadeInUp(
                                 duration: const Duration(milliseconds: 1400),
@@ -546,14 +552,29 @@ class _SignupPageState extends State<SignupPage> {
                       height: 60,
                       onPressed: () async {
                         if (kDebugMode) {
-                          User user = User(loginIdController.text, pwdController.text, nameController.text, _age, genderController.text, phoneController.text, emailController.text, desgnController.text, qualController!, userController.text, activeController);
-                          var response = await service.saveUser(user);
-                          if(response.statusCode == 200) {
-
-                          }
-                          else {
-                            
-                          }
+                          User user = User(
+                              "",
+                              loginIdController.text,
+                              pwdController.text,
+                              nameController.text,
+                              _age,
+                              genderController.text,
+                              phoneController.text,
+                              emailController.text,
+                              desgnController.text,
+                              qualController!,
+                              userController.text,
+                              activeController);
+                          List<String> response = (await service.saveUser(user));
+                          print(response[0]);
+                          print(response[1]);
+                          print(response[2]);
+                          // Use the helper function to show the alert dialog
+                          helper.showAlertDialog(
+                            context,
+                            response[1], // Title
+                            response[2], // Content
+                          );
                         }
                       },
                       color: Colors.greenAccent,

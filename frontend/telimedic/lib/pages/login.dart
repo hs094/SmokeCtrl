@@ -6,7 +6,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:telemedic/pages/dashboard.dart';
+import 'package:telemedic/utils/helper_func.dart';
 import 'package:http/http.dart' as http;
+
+import '../models/user.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,9 +18,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController emailController = TextEditingController();
+  TextEditingController loginidController = TextEditingController();
   TextEditingController pwdController = TextEditingController();
   bool _obscurePassword = true;
+  HelperFunc helper = HelperFunc();
 
   @override
   Widget build(BuildContext context) {
@@ -80,17 +84,20 @@ class _LoginPageState extends State<LoginPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               TextFormField(
-                                controller: emailController,
+                                controller: loginidController,
                                 decoration: InputDecoration(
                                   // border: OutlineInputBorder(),
-                                  labelText: 'Email',
-                                  hintText: 'Enter your Email',
-                                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                                  labelText: 'Login-ID',
+                                  hintText: 'Enter your Login-ID',
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 10),
                                   enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.grey.shade400),
+                                    borderSide:
+                                        BorderSide(color: Colors.grey.shade400),
                                   ),
                                   border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.grey.shade400),
+                                    borderSide:
+                                        BorderSide(color: Colors.grey.shade400),
                                   ),
                                 ),
                               ),
@@ -99,41 +106,53 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         FadeInUp(
-                            duration: const Duration(milliseconds: 1300),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                TextFormField(
-                                  controller: pwdController, // Assign the controller here
-                                  obscureText: _obscurePassword,
-                                  decoration: InputDecoration(
-                                    labelText: 'Password',
-                                    hintText: 'Enter your Password',
-                                    suffixIcon: IconButton(
-                                      icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off,),
-                                      onPressed: () {setState(() {_obscurePassword = !_obscurePassword;});},
+                          duration: const Duration(milliseconds: 1300),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              TextFormField(
+                                controller:
+                                    pwdController, // Assign the controller here
+                                obscureText: _obscurePassword,
+                                decoration: InputDecoration(
+                                  labelText: 'Password',
+                                  hintText: 'Enter your Password',
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
                                     ),
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.grey.shade400),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.grey.shade400),
-                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscurePassword = !_obscurePassword;
+                                      });
+                                    },
                                   ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter your password';
-                                    }
-                                    if (value.length < 6) {
-                                      return 'Password must be at least 6 characters long';
-                                    }
-                                    return null;
-                                  },
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 10),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.grey.shade400),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.grey.shade400),
+                                  ),
                                 ),
-                                const SizedBox(height: 10),
-                              ],
-                            ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your password';
+                                  }
+                                  if (value.length < 6) {
+                                    return 'Password must be at least 6 characters long';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
                         )
                         // FadeInUp(duration: const Duration(milliseconds: 1300), child: makeInput(label: "Password", obscureText: true)),
                       ],
@@ -157,7 +176,8 @@ class _LoginPageState extends State<LoginPage> {
                             minWidth: double.infinity,
                             height: 60,
                             onPressed: () {
-                              loginUser(context, emailController.text, pwdController.text);
+                              loginUser(context, loginidController.text,
+                                  pwdController.text);
                             },
                             color: Colors.greenAccent,
                             elevation: 0,
@@ -204,7 +224,8 @@ class _LoginPageState extends State<LoginPage> {
                   height: MediaQuery.of(context).size.height / 3,
                   decoration: const BoxDecoration(
                       image: DecorationImage(
-                          image: AssetImage('assets/Backgrounds/background.png'),
+                          image:
+                              AssetImage('assets/Backgrounds/background.png'),
                           fit: BoxFit.cover)),
                 ))
           ],
@@ -213,46 +234,42 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<http.Response> loginUser(BuildContext context, String email, String pwd) async {
+  Future<http.Response> loginUser(BuildContext context, String loginid, String pwd) async {
     var uri = Uri.parse("http://localhost:8080/login");
     Map<String, String> headers = {"Content-Type": "application/json"};
     var body = json.encode({
-      'email': email,
-      'password': pwd,
+      'loginid': loginid,
+      'pwd': pwd,
     });
-
-    if (kDebugMode) {
-      print("**************************   REQUEST   **************************");
-      print(body);
-      print("*****************************************************************");
-    }
-
     var response = await http.post(uri, headers: headers, body: body);
 
-    if (kDebugMode) {
-      print('');
-      print("**************************   RESPONSE   **************************");
-      print(response.body);
-      print("******************************************************************");
-    }
-
-    if (response.statusCode == 200) {
-      // Check if the widget is still mounted before navigating
-      if (context.mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DashBoard(),
-          ),
-        );
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      try {
+        Map<String, dynamic> jsonResponse = json.decode(response.body);
+        User user = User.fromJson(jsonResponse);
+        if (context.mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DashBoard(user: user),
+            ),
+          );
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error parsing JSON response: $e');
+        }
       }
     } else {
-      // Handle error (e.g., show a message to the user)
       if (kDebugMode) {
         print("Login failed with status code: ${response.statusCode}");
+        helper.showAlertDialog(
+          context,
+          "Login Failed !", // Title
+          "Either your Login-Id or Password is Incorrect.", // Content
+        );
       }
     }
-
     return response;
   }
 

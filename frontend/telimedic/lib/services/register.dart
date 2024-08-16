@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class RegisterUser {
-  Future<http.Response> saveUser(User user) async {
+  Future<List<String>> saveUser(User user) async {
     var uri = Uri.parse("http://localhost:8080/register");
     Map<String, String> headers = {"Content-Type": "application/json"};
     var body = json.encode({
@@ -21,18 +21,20 @@ class RegisterUser {
       'user_type': user.user_type,
       'active': user.active,
     });
-    if (kDebugMode) {
-      print("**************************   REQUEST   **************************");
-      print(body);
-      print("*****************************************************************");
-    }
     var response = await http.post(uri, headers: headers, body: body);
-    if (kDebugMode) {
-      print('');
-      print("**************************   RESPONSE   **************************");
-      print(response.body);
-      print("******************************************************************");
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      try {
+        List<dynamic> jsonResponse = json.decode(response.body);
+        List<String> res = jsonResponse.map((e) => e.toString()).toList();
+        return res;
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error parsing JSON response: $e');
+        }
+        return [];
+      }
+    } else {
+      return [];
     }
-    return response;
   }
 }

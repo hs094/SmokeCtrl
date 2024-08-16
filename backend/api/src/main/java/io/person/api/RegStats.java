@@ -8,9 +8,8 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "reg_stats")
 public class RegStats {
-
     @Id
-    private String id; // Ensure there's a unique constraint or enforce a single row in your logic
+    private String id; 
     private LocalDate date;
     private Integer count;
 

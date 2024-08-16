@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:telemedic/components/dashboard_home.dart';
 import 'package:telemedic/widgets/menu.dart';
 import 'package:telemedic/utils/responsive.dart';
+import 'package:telemedic/models/user.dart'; // Adjust import according to your project structure
 
 class DashBoard extends StatelessWidget {
-  DashBoard({super.key});
+  final User user; // Add this line to accept the User object
+
+  DashBoard({super.key, required this.user}); // Update the constructor
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
@@ -26,7 +29,7 @@ class DashBoard extends StatelessWidget {
                   child: Menu(scaffoldKey: _scaffoldKey),
                 ),
               ),
-            Expanded(flex: 8, child: HomePage(scaffoldKey: _scaffoldKey)),
+            Expanded(flex: 8, child: HomePage(scaffoldKey: _scaffoldKey, user: user)),
           ],
         ),
       ),
