@@ -25,11 +25,18 @@ class DashBoard extends StatelessWidget {
               Expanded(
                 flex: 3,
                 child: SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: Menu(scaffoldKey: _scaffoldKey),
-                ),
+                    height: MediaQuery.of(context).size.height,
+                    child: Row(children: <Widget>[
+                      Menu(scaffoldKey: _scaffoldKey),
+                      CircleAvatar(
+                        backgroundColor: Colors.brown.shade800,
+                        child: const Text('AH'),
+                      )
+                    ])),
               ),
-            Expanded(flex: 8, child: HomePage(scaffoldKey: _scaffoldKey, user: user)),
+            Expanded(
+                flex: 8,
+                child: HomePage(scaffoldKey: _scaffoldKey, user: user)),
           ],
         ),
       ),

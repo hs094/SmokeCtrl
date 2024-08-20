@@ -5,9 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:telemedic/widgets/header_widget.dart';
 import 'package:telemedic/utils/responsive.dart';
 import 'package:telemedic/models/user.dart';
-import 'package:telemedic/widgets/activity_details_card.dart';
-import 'package:telemedic/widgets/bar_graph_card.dart';
-import 'package:telemedic/widgets/line_chart_card.dart';
 
 class HomePage extends StatelessWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;

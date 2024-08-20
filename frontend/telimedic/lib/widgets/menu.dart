@@ -1,7 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, deprecated_member_use
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:telemedic/utils/responsive.dart';
 import 'package:telemedic/main.dart';
 import 'package:telemedic/models/menu_modal.dart';
@@ -10,9 +7,7 @@ import 'package:telemedic/widgets/history.dart';
 import 'package:telemedic/widgets/notifications.dart';
 import 'package:telemedic/widgets/settings_page.dart';
 import 'package:telemedic/pages/home.dart';
-
 import 'controller_page.dart';
-import 'aboutUs.dart';
 
 class Menu extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;

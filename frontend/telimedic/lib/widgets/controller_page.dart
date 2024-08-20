@@ -37,87 +37,24 @@ class _ControllerPageState extends State<ControllerPage> {
       ),
     );
   }
-
+  // http://localhost:8080/all?page=3
   @override
   Widget build(BuildContext context) {
     double buttonSize = MediaQuery.of(context).size.width * 0.25;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Controller Page'),
-        backgroundColor: Colors.black, // Use a modern color scheme
+        title:
+            const Text('User Database', style: TextStyle(color: Colors.grey)),
+        backgroundColor: const Color(0xFF171821), // Use a modern color scheme
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.grey),
           onPressed: () {
             Navigator.pop(
                 context); // Navigating back to the previous page (menu page).
           },
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Lights',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Switch(
-                  value: _isDeviceOn,
-                  onChanged: (newValue) => _toggleDevicePower(),
-                  activeColor:
-                      Colors.green, // Use a modern color for the switch
-                ),
-              ],
-            ),
-            const SizedBox(height: 20), // Add spacing between sections
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildButton(
-                  'assets/svg/window.svg',
-                  'Windows Open',
-                  () => _onButtonPressed('Windows Open Successfully'),
-                  buttonSize,
-                ),
-                _buildButton(
-                  'assets/svg/window_close.svg',
-                  'Windows Close',
-                  () => _onButtonPressed('Windows Close Successfully'),
-                  buttonSize,
-                ),
-              ],
-            ),
-            const SizedBox(height: 10), // Adjust spacing
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildButton(
-                  'assets/svg/water.svg',
-                  'Water Plant',
-                  () => _onButtonPressed('Watering in Progress...'),
-                  buttonSize,
-                ),
-                _buildButton(
-                  'assets/svg/fan_open.svg',
-                  'Fan On',
-                  () => _onButtonPressed('Fan Turn On Successfully'),
-                  buttonSize,
-                ),
-                _buildButton(
-                  'assets/svg/fan_close.svg',
-                  'Fan Off',
-                  () => _onButtonPressed('Fan Turn Off Successfully'),
-                  buttonSize,
-                ),
-              ],
-            ),
-            // Add more buttons here
-          ],
-        ),
-      ),
+      // body: ,
     );
   }
 

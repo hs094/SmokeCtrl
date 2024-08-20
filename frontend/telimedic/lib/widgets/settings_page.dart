@@ -8,7 +8,6 @@ class SettingsPage2 extends StatefulWidget {
 }
 
 class _SettingsPage2State extends State<SettingsPage2> {
-  //bool _isDark = false;
   bool _isLight = false;
 
   @override
@@ -17,9 +16,8 @@ class _SettingsPage2State extends State<SettingsPage2> {
       data: _isLight ? ThemeData.dark() : ThemeData.light(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Settings"),
-          backgroundColor:
-              const Color(0xFF171821), // Set the background color to black
+          title: const Text("Settings", style: TextStyle(color: Colors.grey)),
+          backgroundColor: const Color(0xFF171821), // Set the background color to black
         ),
         body: Center(
           child: Container(
@@ -47,9 +45,9 @@ class _SettingsPage2State extends State<SettingsPage2> {
                 const _SingleSection(
                   title: "Organization",
                   children: [
-                    //_CustomListTile(
-                    //title: "Profile", icon: Icons.person_outline_rounded),
-                    //_CustomListTile(
+                    // _CustomListTile(
+                    // title: "Profile", icon: Icons.person_outline_rounded),
+                    // _CustomListTile(
                     //     title: "Calling", icon: Icons.phone_outlined),
                   ],
                 ),
@@ -85,8 +83,11 @@ class _CustomListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(title),
-      leading: Icon(icon),
+      title: Text(
+        title,
+        style: const TextStyle(color: Colors.grey), // Ensure grey color for title
+      ),
+      leading: Icon(icon, color: Colors.grey), // Ensure grey color for icon
       trailing: trailing,
       onTap: () {},
     );
