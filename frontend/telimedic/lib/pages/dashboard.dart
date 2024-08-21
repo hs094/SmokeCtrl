@@ -36,7 +36,7 @@ class DashBoard extends StatelessWidget {
               ),
             Expanded(
                 flex: 8,
-                child: HomePage(scaffoldKey: _scaffoldKey, user: user)),
+                child: DashHomePage(scaffoldKey: _scaffoldKey, user: user)),
           ],
         ),
       ),

@@ -2,14 +2,14 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:telemedic/widgets/header_widget.dart';
-import 'package:telemedic/components/chat.dart';
 import 'package:telemedic/utils/responsive.dart';
 import 'package:telemedic/models/user.dart';
 
-class HomePage extends StatelessWidget {
+class DashHomePage extends StatelessWidget {
+  static const routeName = '/dash-home';
   final GlobalKey<ScaffoldState> scaffoldKey;
   final User user;
-  const HomePage({super.key, required this.scaffoldKey, required this.user});
+  const DashHomePage({super.key, required this.scaffoldKey, required this.user});
 
   @override
   Widget build(BuildContext context) {

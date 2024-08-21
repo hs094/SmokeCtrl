@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:rive/rive.dart';
 
 class HomePage extends StatefulWidget {
+  static const routeName = '/home';
   const HomePage({super.key});
 
   @override
