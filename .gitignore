@@ -3,3 +3,5 @@ llm/.venv
 llm/model/*
 llm/.env
 api/llm/models--mtgv--MobileLLaMA-1.4B-Chat
+**/venv*
+**/.DS_Store*

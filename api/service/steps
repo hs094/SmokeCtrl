@@ -1,0 +1,4 @@
+pip3 install huggingface-hub
+login if needed
+huggingface-cli download andrijdavid/MobileLLaMA-1.4B-Base-GGUF --local-dir . --local-dir-use-symlinks False --include='*Q4_K*gguf'
+pip3 install llama-cpp-python --break-system-packages --verbose
