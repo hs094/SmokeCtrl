@@ -1,9 +1,24 @@
+# Ignore the build directory
 telimedic/build
+
+# Ignore virtual environment directories
 # llm/.venv
-# llm/model/*
-# llm/.env
-# api/llm/models--mtgv--MobileLLaMA-1.4B-Chat
 **/venv*
+
+# Ignore model files
+# llm/model/*
+llm/model/*
+
+# Ignore environment variable files
+# llm/.env
+.env
+
+# Ignore specific model files
+api/llm/models--mtgv--MobileLLaMA-1.4B-Chat
+
+# Ignore .DS_Store files
 **/.DS_Store*
 .DS_Store
-.env
+
+# Ignore gguf files
+*.gguf
