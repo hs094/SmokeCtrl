@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 # Configuration for LLaMA model
 n_gpu_layers = 1  # Number of layers to run on GPU
-n_batch = 512  # Batch size, adjust based on memory constraints
+n_batch = 128  # Batch size, adjust based on memory constraints
 
 # Initialize the callback manager for streaming
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
@@ -33,6 +33,8 @@ llama_model_path = "/Users/hardiksoni/Library/CloudStorage/OneDrive-iitkgp.ac.in
 llama_llm = LlamaCpp(
     model_path=llama_model_path,
     n_gpu_layers=n_gpu_layers,
+    max_tokens=2000,
+    temperature=0.1,
     n_batch=n_batch,
     f16_kv=True,  # Ensure correct memory usage
     callback_manager=callback_manager,
@@ -42,7 +44,8 @@ llama_llm = LlamaCpp(
 # Define the prompt template for the model
 prompt_template = PromptTemplate(
     input_variables=["input_text"],
-    template="Respond to the following input: {input_text}"
+    template="A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions. USER: Respond to the following input in no more than 450 words: {input_text} ASSISTANT:"
+    # template="Respond to the following input in no more than 200 words: {input_text}"
 )
 
 # Define the LLM chain using the prompt template and the LLaMA model
