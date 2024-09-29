@@ -1,7 +1,7 @@
+# urls.py
 from django.urls import path
-from . import views
+from .views import GenerateResponseView
 
 urlpatterns = [
-    # Define a URL pattern for the chat endpoint
-    path('chat/', views.generate_response, name='generate_response'),
+    path('chat/', GenerateResponseView.as_view(), name='generate_response'),
 ]

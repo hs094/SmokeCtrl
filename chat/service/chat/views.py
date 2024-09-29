@@ -73,7 +73,7 @@ class GenerateResponseView(APIView):
                 return Response({"error": "input_text is required"}, status=status.HTTP_400_BAD_REQUEST)
 
             # Generate response using the LLaMA model
-            response = llama_chain.run(input_text)
+            response = llama_chain.invoke({"input_text": input_text})
             return Response({"response": response}, status=status.HTTP_200_OK)
 
         except Exception as e:

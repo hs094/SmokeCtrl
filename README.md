@@ -23,4 +23,3 @@ iMediXcare is an open-source web-based system. It is developed for providing rem
     mvn clean install
     mvn spring-boot:run
     ```
-     
