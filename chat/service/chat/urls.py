@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import ChatCompletionView
+from . import views
 
 urlpatterns = [
-    path('chat/', ChatCompletionView.as_view(), name='chat_completion'),
+    # Define a URL pattern for the chat endpoint
+    path('chat/', views.generate_response, name='generate_response'),
 ]
