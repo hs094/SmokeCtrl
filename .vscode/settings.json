@@ -1,6 +1,6 @@
 {
     "java.compile.nullAnalysis.mode": "automatic",
-    "cmake.sourceDirectory": "/Users/hardiksoni/Dev.hs/StudioProjects/MTP Project/telimedic/linux",
+    "cmake.sourceDirectory": "/Users/hardiksoni/Dev.hs/StudioProjects/MTP Project/telmed/linux",
     "java.configuration.updateBuildConfiguration": "interactive",
     "python.analysis.autoImportCompletions": true
 }

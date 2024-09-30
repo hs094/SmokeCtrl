@@ -1,5 +1,5 @@
 # Ignore the build directory
-telimedic/build
+telmed/build
 
 # Ignore virtual environment directories
 # llm/.venv

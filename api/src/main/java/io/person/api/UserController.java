@@ -23,6 +23,7 @@ public class UserController {
 
     @PostMapping("/register")
     public List<String> Register(@RequestBody User user) {
+        user.print();
         return userService.saveUser(user);
     }
 
@@ -43,8 +44,13 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/chat")
-    public String genAnswer(@RequestBody Prompt pr) {
+    @PostMapping("/chat/v1")
+    public String genAnswerToPrompt_v1(@RequestBody Prompt pr) {
+        return "Success";
+    }
+
+    @PostMapping("/chat/v2")
+    public String genAnswerToPrompt_v2(@RequestBody Prompt pr) {
         return "Success";
     }
 }
