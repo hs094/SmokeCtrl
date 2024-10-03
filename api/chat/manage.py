@@ -3,10 +3,27 @@ warnings.filterwarnings("ignore")
 
 import argparse
 import logging
+
+# LlamaCpp for model loading
 from langchain_community.llms import LlamaCpp
-from langchain.prompts import PromptTemplate
-from langchain_core.callbacks import CallbackManager, \
-StreamingStdOutCallbackHandler
+
+# Prompt templating
+from langchain.prompts import (
+    PromptTemplate, 
+    HumanMessagePromptTemplate, 
+    ChatPromptTemplate
+)
+
+# Callback management and streaming
+from langchain_core.callbacks import CallbackManager, StreamingStdOutCallbackHandler
+
+# Output parsing
+from langchain_core.output_parsers import StrOutputParser
+
+# Chain setup
+from langchain.chains import LLMChain
+
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -35,14 +52,17 @@ class LLModel:
         """
         self.model_path = path
         callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+        # Initiating the LLM
+        n_gpu_layers = 1  # Metal set to 1
+        n_batch = 512  # Should be between 1 and n_ctx, consider the amount of RAM of your Apple Silicon Chip.
         # Initialize the LlamaCpp model
         self.llm = LlamaCpp(
             model_path=self.model_path,
-            n_gpu_layers=1,
-            n_batch=512,
+            n_gpu_layers=n_gpu_layers,
+            n_batch=n_batch,
+            f16_kv=True,
+            n_ctx=2048,            
             temperature=0.75,
-            f16_kv=True,            
-            n_threads=8,            # Number of CPU threads to use
             callback_manager=callback_manager,
             verbose=False
         )
@@ -90,8 +110,10 @@ if __name__ == '__main__':
     
     # Initialize and run the model
     model = LLModel(args.model)
+
     system_prompt = "Please respond to the following question in no more than 200 words. \
                     You are a helpful AI that responds in markdown format."
+    
     response = model.run(s_prompt=system_prompt, u_mesg=args.prompt)
     
     # Print the response
