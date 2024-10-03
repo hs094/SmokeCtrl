@@ -18,3 +18,8 @@ Note: Check in Postman using This:->
 - Django allows you to create a robust web framework for building APIs.
 - Docker helps containerize the Django project, making it portable and easy to run across different environments.
 - LangChain and llama-cpp-python integrate well to provide language generation functionality, making this setup a powerful local server for LLaMA models.
+
+pip3 install huggingface-hub
+login if needed
+huggingface-cli download andrijdavid/MobileLLaMA-1.4B-Base-GGUF --local-dir . --local-dir-use-symlinks False --include='*Q4_K*gguf'
+pip3 install llama-cpp-python --break-system-packages --verbose

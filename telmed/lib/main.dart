@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "telmed",
+      title: "iMediXCare",
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.light,
       theme: themeData,

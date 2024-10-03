@@ -1,0 +1,5 @@
+1. Create a RAG API on Spring Backend using:- https://readmedium.com/en/https:/ai.plainenglish.io/mastering-rag-with-spring-ai-transform-your-data-into-smart-applications-80a76f575ddc
+2. Improve Spring Boot Project Stucture using:-
+    - https://levelup.gitconnected.com/how-to-monitoring-spring-boot-applications-with-actuator-and-micrometer-f3a8a6f5d717
+    - https://medium.com/gitconnected/mastering-spring-boot-cache-eviction-a-comprehensive-guide-for-optimal-performance-ab45891c02e1
+    - 
