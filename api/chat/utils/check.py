@@ -1,15 +1,19 @@
 import os
+import time
 import warnings
+from langchain import hub
 import nest_asyncio
 from typing import List
+from langchain import hub
+
 from langchain_community.document_loaders import (
     CSVLoader, BSHTMLLoader, UnstructuredMarkdownLoader, PyPDFLoader
 )
-from langchain.schema import Document
+from langchain_chroma import Chroma
 from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
-from langchain.text_splitter import CharacterTextSplitter
-from langchain_community.vectorstores import Chroma
-from langchain_community.document_transformers import Html2TextTransformer
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # Suppress warnings for clean output
 warnings.filterwarnings("ignore")
@@ -68,9 +72,9 @@ def loader(file_path):
     data = loader.load()
     return data
 
-def build_retriever(directory_path, model_name="sentence-transformers/all-mpnet-base-v2", persist_directory=None):
+def build_vector_store(directory_path, model_name="sentence-transformers/all-mpnet-base-v2", persist_directory=None):
     """
-    Build a retriever based on documents in a directory, using HuggingFace embeddings and Chroma.
+    Build a Chroma vector store based on documents in a directory, using HuggingFace embeddings.
     
     Args:
         directory_path (str): Path to the directory containing the documents.
@@ -78,52 +82,45 @@ def build_retriever(directory_path, model_name="sentence-transformers/all-mpnet-
         persist_directory (str, optional): Path to persist the embeddings.
 
     Returns:
-        VectorStoreRetriever: A retriever instance based on the processed documents.
+        Chroma: A Chroma vector store instance based on the processed documents.
     """
     # Load documents from the directory
+    hf_embeddings = HuggingFaceEmbeddings(model_name=model_name)
     print(f"Loading documents from: {directory_path}")
-    documents = load_documents_from_directory(directory_path)
-    
-    # Convert HTML documents to plain text if needed
-    html2text = Html2TextTransformer()
-    docs_transformed = html2text.transform_documents(documents)
-    
-    # Split text into chunks for efficient embedding processing
-    text_splitter = CharacterTextSplitter(chunk_size=128, chunk_overlap=0)
-    chunked_documents = text_splitter.split_documents(docs_transformed)
-    
-    # Initialize HuggingFace embeddings
-    embeddings = HuggingFaceEmbeddings(model_name=model_name)
-    
-    # Initialize Chroma vector store
-    db = Chroma.from_documents(chunked_documents, embeddings, persist_directory=persist_directory)
-    
-    # Persist the database if a directory is provided
-    if persist_directory:
-        db.persist()
-    
-    # Create retriever
-    retriever = db.as_retriever()
-    return retriever
+    docs = load_documents_from_directory(directory_path)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    splits = text_splitter.split_documents(docs)
+    vectorstore = Chroma(persist_directory=persist_directory).from_documents(documents=splits, embedding=hf_embeddings)
+    return vectorstore
 
 # Example usage
 if __name__ == "__main__":
+    start_time = time.time()
     # Path to directory containing documents to process
     document_directory = os.path.join(os.path.dirname(__file__), '..', 'datasets', 'documents')
     
     # Define the path to persist embeddings
     embeddings_path = os.path.join(os.path.dirname(__file__), '..', 'datasets', 'embeddings')
     
-    # Build retriever based on documents in the directory
-    retriever = build_retriever(document_directory, persist_directory=embeddings_path)
-    
+    # Build the vector store based on documents in the directory
+    # vector_store = build_vector_store(document_directory, persist_directory=embeddings_path)
+    vector_store = Chroma(
+        persist_directory=embeddings_path,
+        embedding_function=HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+    )
     # Retrieve and print a sample result based on a query
     query = "What is Clinical Institute Withdrawal Assessment of Alcohol Scale, Revised (CIWA-Ar)"
-    results = retriever.get_relevant_documents(query)
-    
+    results = vector_store.similarity_search(query=query,k=5)
+    # for res in results:
+    #     print(f"* {res.page_content} [{res.metadata}]")
+
     for i, result in enumerate(results, 1):
         file_name = result.metadata.get('source', 'Unknown')
         print(f"Result {i}:")
         print(f"File: {file_name}")
         print(result.page_content)
         print("\n" + "="*50 + "\n")
+    
+    end_time = time.time()
+    # Print the time taken for the search
+    print(f"Time taken for similarity search: {end_time - start_time:.4f} seconds")
