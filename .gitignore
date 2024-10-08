@@ -5,16 +5,12 @@ telmed/build
 # llm/.venv
 **/venv*
 
-# Ignore model files
-# llm/model/*
-llm/model/*
-
 # Ignore environment variable files
 # llm/.env
 .env
 
 # Ignore specific model files
-api/llm/models--mtgv--MobileLLaMA-1.4B-Chat
+api/chat/model/
 
 # Ignore .DS_Store files
 **/.DS_Store*

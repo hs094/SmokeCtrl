@@ -2,4 +2,10 @@
 2. Improve Spring Boot Project Stucture using:-
     - https://levelup.gitconnected.com/how-to-monitoring-spring-boot-applications-with-actuator-and-micrometer-f3a8a6f5d717
     - https://medium.com/gitconnected/mastering-spring-boot-cache-eviction-a-comprehensive-guide-for-optimal-performance-ab45891c02e1
-    - 
+3. Implementing RAG and Model Inference in Java
+4. PEFT and qLoRA (Design a Metric to Measure Accuracy of a Model)
+5. Try Langsmith, LangGraph and Langchain's Efficient Streaming to Reduce Query Time
+6. Creating 5 Branches
+7. Doctors Unverified by Admin cannot provide Insights into Patient Conditions
+
+
