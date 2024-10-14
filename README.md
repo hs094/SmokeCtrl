@@ -1,5 +1,5 @@
 # iMediXcare
-### iMediXcare — A mobile-based telemedicine cum digital healthcare system.
+### iMediXcare — A mobile-based telmedine cum digital healthcare system.
 iMediXcare is an open-source web-based system. It is developed for providing remote consultation to the patients. 
 
 - #### Platform and environment details
@@ -13,7 +13,7 @@ iMediXcare is an open-source web-based system. It is developed for providing rem
     ```
     
 - #### Steps to Run the Application
-    First, go to directory `frontend/telemedic/` and open a terminal window here:
+    First, go to directory `frontend/telmed/` and open a terminal window here:
     ```sh
     flutter pub get
     flutter run
@@ -23,3 +23,11 @@ iMediXcare is an open-source web-based system. It is developed for providing rem
     mvn clean install
     mvn spring-boot:run
     ```
+
+Try this as well for iOS Build:
+```
+flutter clean \
+        && rm ios/Podfile.lock pubspec.lock \
+        && rm -rf ios/Pods ios/Runner.xcworkspace \
+        && flutter build ios --build-name=1.0.0 --build-number=1 --release --dart-define=MY_APP_ENV=prod
+```
