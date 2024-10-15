@@ -5,13 +5,13 @@ class User {
   String loginid;
   String pwd;
   String name;
+  String email;
   int age;
   String sex;
   String phone;
-  String email;
   String designation;
   String qualification;
-  String user_type;
+  String userType; 
   bool active;
 
   User(
@@ -25,7 +25,7 @@ class User {
       this.email,
       this.designation,
       this.qualification,
-      this.user_type,
+      this.userType,
       this.active,
       );
 
@@ -42,7 +42,7 @@ class User {
       json['email'],
       json['designation'],
       json['qualification'],
-      json['user_type'],
+      json['userType'],
       json['active'],
     );
   }

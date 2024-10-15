@@ -234,7 +234,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<http.Response> loginUser(BuildContext context, String loginid, String pwd) async {
-    var uri = Uri.parse("http://localhost:8080/login");
+    var uri = Uri.parse("http://localhost:8080/auth/login");
     Map<String, String> headers = {"Content-Type": "application/json"};
     var body = json.encode({
       'loginid': loginid,

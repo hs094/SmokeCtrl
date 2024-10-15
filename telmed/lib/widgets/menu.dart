@@ -21,12 +21,12 @@ class Menu extends StatefulWidget {
 //menu page widgets..
 class _MenuState extends State<Menu> {
   List<MenuModel> menu = [
-    MenuModel(icon: 'assets/svg/home.svg', title: "Dashboard"),
-    MenuModel(icon: 'assets/svg/remote.svg', title: "User Database"),
-    MenuModel(icon: 'assets/svg/bell.svg', title: "Notification"),
-    MenuModel(icon: 'assets/svg/history.svg', title: "History"),
-    MenuModel(icon: 'assets/svg/setting.svg', title: "Settings"),
-    MenuModel(icon: 'assets/svg/signout.svg', title: "Sign Out"),
+    MenuModel(icon: 'assets/svg/home_black.svg', title: "Dashboard"),
+    MenuModel(icon: 'assets/svg/remote_grey.svg', title: "User Database"),
+    MenuModel(icon: 'assets/svg/bell_grey.svg', title: "Notification"),
+    MenuModel(icon: 'assets/svg/history_grey.svg', title: "History"),
+    MenuModel(icon: 'assets/svg/setting_grey.svg', title: "Settings"),
+    MenuModel(icon: 'assets/svg/logout_grey.svg', title: "Sign Out"),
   ];
 
   int selected = 0;
@@ -103,18 +103,11 @@ class _MenuState extends State<Menu> {
                               builder: (context) => const SettingsPage2()),
                         );
                         break;
-                      // case 5: //About Us
-                      //   Navigator.of(context).push(
-                      //     MaterialPageRoute(
-                      //         builder: (context) => const AboutUsPage()),
-                      //   );
-                      //   break;
                       case 5: //Exit
                         Navigator.of(context).push(
                           MaterialPageRoute(
                               builder: (context) => const HomePage()),
                         );
-                      // go back to
                     }
                   },
                   child: Row(
@@ -147,6 +140,3 @@ class _MenuState extends State<Menu> {
     );
   }
 }
-//components should works well in different platforms.
-//add connection to firebase.
-//Merry Christmas

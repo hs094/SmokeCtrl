@@ -17,7 +17,7 @@ from langchain_core.callbacks import CallbackManager, StreamingStdOutCallbackHan
 # Chain setup
 from langchain.chains import LLMChain
 from langchain_chroma import Chroma  # Import updated Chroma for retrieval
-from langchain_huggingface import HuggingFaceEmbeddings
+# from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 
@@ -37,10 +37,10 @@ class LLModel:
         self.model_path = model_path
         
         # Initialize HuggingFace embeddings
-        self.embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+        # self.embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
         
         # Initialize Chroma DB from existing embeddings and specify the embedding function
-        self.vector_store = Chroma(persist_directory=db_path, embedding_function=self.embeddings)
+        # self.vector_store = Chroma(persist_directory=db_path, embedding_function=self.embeddings)
         
         callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
         
@@ -81,11 +81,12 @@ class LLModel:
         """
         Executes the model with the specified question and returns the generated response.
         """
-        results = self.vector_store.similarity_search(query=question,k=1)
+        # results = self.vector_store.similarity_search(query=question,k=1)
         # Invoke the chain with the question
         response = self.llama_chain.invoke({
                     "system": system,
-                    "context": "\n\n".join(result.page_content for result in results), 
+                    "context": "",
+                    # "context": "\n\n".join(result.page_content for result in results), 
                     "question": question
                 })
         return response
@@ -102,7 +103,7 @@ if __name__ == '__main__':
     # Parse the arguments
     args = parser.parse_args()
     
-    model_path = './model/1B/llama-3.2-1b-instruct-q4_k_m.gguf'
+    model_path = './model/llama-3.2-1b-instruct-q4_k_m.gguf'
     db_path = './datasets/embeddings'  # Path to the directory containing the existing Chroma database
     
     # Initialize the model

@@ -39,7 +39,7 @@ class DashHomePage extends StatelessWidget {
                   child: AnimatedTextKit(
                     animatedTexts: [
                       TypewriterAnimatedText(
-                        'Welcome ${convertRole(user.user_type)} !',
+                        'Welcome ${convertRole(user.userType)} !',
                         speed: const Duration(milliseconds: 100),
                         cursor: ' _',
                       ),

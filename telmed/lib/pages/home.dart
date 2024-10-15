@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:telmed/pages/login.dart';
 import 'package:telmed/pages/signup.dart';
+import 'package:telmed/pages/dashboard.dart';
+import 'package:telmed/models/user.dart';
 import 'dart:ui';
 import 'package:rive/rive.dart' as rive; // Alias for Rive import
 

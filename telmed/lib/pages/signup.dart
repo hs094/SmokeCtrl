@@ -1,4 +1,3 @@
-
 import 'package:animate_do/animate_do.dart';
 import 'package:telmed/pages/home.dart';
 import 'package:telmed/utils/constants.dart';
@@ -564,7 +563,8 @@ class _SignupPageState extends State<SignupPage> {
                               qualController!,
                               userController.text,
                               activeController);
-                          List<String> response = (await service.saveUser(user));
+                          List<String> response =
+                              (await service.saveUser(user));
                           print(response[0]);
                           print(response[1]);
                           print(response[2]);
