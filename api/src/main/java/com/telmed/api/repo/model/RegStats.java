@@ -1,4 +1,4 @@
-package com.telmed.api.Repository;
+package com.telmed.api.repo.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

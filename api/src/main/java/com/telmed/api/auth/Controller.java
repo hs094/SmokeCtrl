@@ -1,6 +1,8 @@
-package com.telmed.api.Auth;
+package com.telmed.api.auth;
 
-import com.telmed.api.Repository.*;
+import com.telmed.api.repo.*;
+import com.telmed.api.repo.model.RegStats;
+import com.telmed.api.repo.model.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 

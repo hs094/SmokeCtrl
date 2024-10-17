@@ -1,4 +1,5 @@
-package com.telmed.api.Repository;
+package com.telmed.api.repo;
+import com.telmed.api.repo.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 

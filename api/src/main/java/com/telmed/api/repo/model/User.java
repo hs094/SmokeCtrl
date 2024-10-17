@@ -1,4 +1,4 @@
-package com.telmed.api.Repository;
+package com.telmed.api.repo.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
