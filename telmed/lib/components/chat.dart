@@ -1,11 +1,16 @@
 import 'dart:convert';
+import 'package:telmed/models/user.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 class ChatPage extends StatefulWidget {
   static const routeName = '/chat';
-  const ChatPage({super.key});
+  
+  final User user;
+
+  const ChatPage({Key? key, required this.user}) : super(key: key);
+
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
@@ -14,52 +19,50 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController _chatController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<Map<String, dynamic>> _chatHistory = [];
+  late User user;
 
-  void getAnswer(String prompt) async {
-    String res = " **Physiological Effects of Prolonged Alcohol Consumption**\n The physiological effects of prolonged alcohol consumption can be devastating, leading to various physical and psychological problems.\n**Physiological Effects:**\n1.  **Cardiovascular Problems**: Regular heavy drinking can lead to heart disease, increased blood pressure, and cardiac arrhythmias.\n2.  **Hormonal Imbalance**: Chronic alcohol use can disrupt hormone levels, including estrogen, testosterone, and thyroid hormones.\n3.  **Neurological Issues**: Alcohol consumption has been linked to neurological problems such as seizures, stroke, and dementia.\n\n**Psychological Effects:**\n\n1.  **Depression**: Prolonged heavy drinking is a well-established risk factor for depression.\n2.  **Anxiety Disorders**: Chronic alcohol use can also contribute to the development of anxiety disorders, such as social anxiety disorder.\n3.  **Impulsivity and Aggression**: Alcohol consumption has been linked to increased impulsivity and aggression in individuals with antisocial personality disorder.\n\nIn conclusion, prolonged alcohol consumption can have severe physiological effects on both physical and mental health. It is essential for individuals who consume alcohol regularly to understand the potential risks and take steps to mitigate them.";
-    // List to store the messages for the prompt
+  @override
+  void initState() {
+    super.initState();
+    user = widget.user; // Initialize the user from the widget
+  }
+
+  void getAnswer(String userid, String prompt) async {
     List<Map<String, String>> msg = [
       {"content": prompt}
     ];
 
-    // Add the chat history messages to the prompt
     for (var i = 0; i < _chatHistory.length; i++) {
       msg.add({"content": _chatHistory[i]["message"]});
     }
 
-    // Create the request object
     Map<String, dynamic> request = {
-      "prompt": {"messages": msg},
-      "temperature": 0.25,
-      "candidateCount": 1,
-      "topP": 1,
-      "topK": 1
+      "userid": user.userid,
+      "prompt": prompt
     };
 
+    final uri = Uri.parse("http://localhost:8080/chat/v1/completions/");
+    final response = await http.post(uri,
+        body: jsonEncode(request), headers: {"Content-Type": "application/json"});
+
+    if (kDebugMode) {
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+    }
+
     setState(() {
-      if (res.isNotEmpty) {
+      if (response.body.isNotEmpty) {
         _chatHistory.add({
           "time": DateTime.now(),
-          "message": res,
-          "isSender": true,
+          "message": response.body,
+          "isSender": false,
         });
-        _chatController.clear();
       }
     });
 
-    // Send the request to the Spring backend
-    // final uri = Uri.parse("http://localhost:8080/chat");
-    // final response = await http.post(uri, body: jsonEncode(request), headers: {"Content-Type": "application/json"});
-
-    // if (kDebugMode) {
-    // print('Response status: ${response.statusCode}');
-    // print('Response body: ${response.body}');
-    // }
-
+    // Scroll to the bottom after adding the response
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollController.jumpTo(
-        _scrollController.position.maxScrollExtent,
-      );
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
   }
 
@@ -184,7 +187,7 @@ class _ChatPageState extends State<ChatPage> {
                                     });
 
                                     // Make sure to call getAnswer after clearing the chat controller
-                                    getAnswer(message);
+                                    getAnswer(user.userid , message);
 
                                     // // Ensuring scrolling happens after the UI is updated
                                     WidgetsBinding.instance

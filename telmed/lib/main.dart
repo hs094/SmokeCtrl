@@ -23,7 +23,6 @@ class MyApp extends StatelessWidget {
       initialRoute: HomePage.routeName,
       routes: {
         HomePage.routeName: (context) => const HomePage(),
-        ChatPage.routeName: (context) => const ChatPage(),
         DashHomePage.routeName: (context) => DashHomePage(scaffoldKey: scaffoldKey, user: user)
       },
     );

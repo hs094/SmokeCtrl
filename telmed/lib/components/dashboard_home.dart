@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:telmed/widgets/header_widget.dart';
 import 'package:telmed/utils/responsive.dart';
+import 'package:telmed/components/chat.dart';
 import 'package:telmed/models/user.dart';
 
 class DashHomePage extends StatelessWidget {
@@ -102,7 +103,9 @@ class DashHomePage extends StatelessWidget {
                                   top: 8.0, left: 16.0, bottom: 16.0),
                               child: (TextButton(
                                   onPressed: () {
-                                    Navigator.pushNamed(context, '/chat');
+                                    Navigator.push(context, MaterialPageRoute(
+                                            builder: (context) =>
+                                              ChatPage(user: user)));
                                   },
                                   style: ButtonStyle(
                                     backgroundColor:
