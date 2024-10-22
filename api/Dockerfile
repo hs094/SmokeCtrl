@@ -1,44 +1,27 @@
-# Use official Python runtime as a parent image
-FROM python:3.9-slim
+# Use a base image with Java and Gradle
+FROM gradle:7.5.1-jdk17 AS build
 
-# Install Miniconda
-RUN apt-get update && apt-get install -y wget bzip2 \
-    && wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh \
-    && bash /tmp/miniconda.sh -b -p /opt/conda \
-    && rm /tmp/miniconda.sh \
-    && /opt/conda/bin/conda clean -tipsy
 
-# Update PATH to include Conda
-ENV PATH=/opt/conda/bin:$PATH
+# Set the working directory inside the container
+WORKDIR /app
 
-# Set the working directory in the container
-WORKDIR /chat
+# Copy your Gradle build files
+COPY build.gradle settings.gradle ./
+COPY src ./src
 
-# Copy the current directory contents into the container at /chat
-COPY . /chat
+# Build the application
+RUN gradle build --no-daemon
 
-# Install necessary build tools and dependencies
-RUN apt-get install -y build-essential cmake gcc g++ git libopenblas-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Use a smaller base image for running the application
+FROM openjdk:17-jdk-slim
 
-# Create Conda environment from the environment.yml file
-COPY environment.yml /chat/environment.yml
-RUN conda env create -f /chat/environment.yml
+# Set the working directory
+WORKDIR /app
 
-# Activate the Conda environment
-ENV CONDA_DEFAULT_ENV=bot
-ENV PATH="/opt/conda/envs/bot/bin:$PATH"
+# Copy the built JAR file from the build stage
+COPY --from=build /app/build/libs/*.jar app.jar
 
-# Make sure the Conda environment is activated in the shell
-SHELL ["conda", "run", "-n", "bot", "/bin/bash", "-c"]
+# Specify the command to run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
 
-# Install llama-cpp-python and langchain using Conda or Pip inside the Conda environment
-RUN pip uninstall llama-cpp-python -y \
-    && pip install -U llama-cpp-python --no-cache-dir \
-    && pip install -U langchain langchain-community
-
-# Expose port 8000 to the outside world
-EXPOSE 8000
-
-# Run the Django development server
-CMD ["conda", "run", "--no-capture-output", "-n", "bot", "python", "service/manage.py", "runserver", "0.0.0.0:8000"]
+# Optional: If you have other runtime dependencies, you can add them here

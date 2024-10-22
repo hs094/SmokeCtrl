@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: 'postgres:17'
+    environment:
+      - 'POSTGRES_DB=mydatabase'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_USER=myuser'
+    ports:
+      - '5432'
+
+  api:
+    build:
+      context: .  # Build context should be the root of your project
+      dockerfile: Dockerfile  # Specify the Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase  # Point to the postgres service
+      - SPRING_DATASOURCE_USERNAME=myuser
+      - SPRING_DATASOURCE_PASSWORD=secret
+    ports:
+      - '8080:8080'  # Expose the API service on port 8080
+    depends_on:
+      - postgres  # Ensure the postgres service is started before this service
