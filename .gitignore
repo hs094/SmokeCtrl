@@ -18,3 +18,4 @@ api/chat/model/
 
 # Ignore gguf files
 *.gguf
+api/src/main/java/com/telmed/api/service/chat/model/**

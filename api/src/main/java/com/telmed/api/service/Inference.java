@@ -1,29 +1,31 @@
 package com.telmed.api.service;
 
-
-//import com.telmed.api.service.llama4j.Llama;
-//import com.telmed.api.service.llama4j.ModelLoader;
-import com.telmed.api.service.llama4j.Llama;
-import com.telmed.api.service.llama4j.ModelLoader;
+import com.telmed.api.service.model.PromptComponent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.telmed.api.service.model.CondaEnvRunner.runPythonScript;
 
 @RestController
 @RequestMapping("/chat")
 public class Inference {
     @PostMapping("/v1/completions/")
-    public ResponseEntity<?> loginUser(@RequestBody PromptComponent user) throws IOException {
-        Llama model = ModelLoader.loadModel(Path.of("/Users/hardiksoni/Dev.hs/iMediXcare/api/src/main/java/com/telmed/api/service/llama4j/Llama-3.2-1B-Instruct-Q4_0.gguf"),
-                                                        2048, true);
-        return ResponseEntity.ok("Model Loaded");
+    public ResponseEntity<?> loginUser(@RequestBody PromptComponent pr) {
+        List<String> response = new ArrayList<>();
+        try {
+            String output = runPythonScript(pr.getPrompt());
+            response.add(output);
+        } catch (IOException | InterruptedException e) {
+            return ResponseEntity.status(500).body(MessageFormat.format("Error while running script: {0}", e.getMessage()));
+        }
+        return ResponseEntity.ok(response);
     }
 }
