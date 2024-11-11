@@ -15,6 +15,7 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   TextEditingController emailController = TextEditingController();
@@ -28,6 +29,16 @@ class _SignupPageState extends State<SignupPage> {
   TextEditingController pwdController = TextEditingController();
   TextEditingController confirmPwdController = TextEditingController();
   TextEditingController desgnController = TextEditingController();
+
+  final RegExp emailRegex = RegExp(
+      r'^[\w-]+(\.[\w-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.([a-zA-Z]{2,})$');
+  final RegExp nameRegex = RegExp(r'^[a-zA-Z ]+$');
+  final RegExp loginIdRegex = RegExp(r'^[a-zA-Z]+$');
+  final RegExp phoneRegex = RegExp(r'^\d{10}$');
+  final RegExp designationRegex = RegExp(r'^[a-zA-Z ]+$');
+  final RegExp passwordRegex = RegExp(
+      r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,15}$');
+
   String? qualController;
   RegisterUser service = RegisterUser();
   HelperFunc helper = HelperFunc();
@@ -38,12 +49,43 @@ class _SignupPageState extends State<SignupPage> {
     qualController = qualifications.first;
   }
 
+  bool validateEmail(String email) {
+    return emailRegex.hasMatch(email);
+  }
+
+  bool validateName(String name) {
+    return nameRegex.hasMatch(name);
+  }
+
+  bool validateLoginId(String loginId) {
+    return loginIdRegex.hasMatch(loginId);
+  }
+
+  bool validatePhone(String phone) {
+    return phoneRegex.hasMatch(phone);
+  }
+
+  bool validateDesignation(String designation) {
+    return designationRegex.hasMatch(designation);
+  }
+
+  bool validatePassword(String password) {
+    return passwordRegex.hasMatch(password);
+  }
+
   bool _passwordsMatch() {
     return pwdController.text == confirmPwdController.text;
   }
 
   @override
-  Widget build(BuildContext context) {
+/// Builds the sign-up screen for the application.
+  ///
+  /// This widget creates the sign-up screen, which includes input fields for email, name, login ID, phone number, gender, age, user type, designation, and education. It also includes password and confirm password fields, as well as a sign-up button and a link to the login page.
+  ///
+  /// The widget uses various validation functions to ensure that the user input is valid, and displays error messages if any of the fields are invalid. It also uses the `RegisterUser` and `HelperFunc` services to handle the sign-up process.
+  ///
+  /// The widget is designed to be responsive and uses the `FadeInUp` animation to provide a smooth user experience.
+    Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: Colors.white,
@@ -83,451 +125,507 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: FadeInUp(
-                                duration: const Duration(milliseconds: 1200),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    TextFormField(
-                                      controller: emailController,
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Email',
-                                        hintText: 'Enter your Email Address',
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                                width: 10), // Add space between the two fields
-                            Expanded(
-                              child: FadeInUp(
-                                duration: const Duration(milliseconds: 1300),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    TextFormField(
-                                      controller: nameController,
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Name',
-                                        hintText: 'Enter First and Last Name',
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: FadeInUp(
-                                duration: const Duration(milliseconds: 1400),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    TextFormField(
-                                      controller: loginIdController,
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Login-ID',
-                                        hintText: 'Enter your Login-ID',
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                                width: 10), // Add space between the two fields
-                            Expanded(
-                              child: FadeInUp(
-                                duration: const Duration(milliseconds: 1400),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    TextFormField(
-                                      controller: phoneController,
-                                      keyboardType: TextInputType.phone,
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Phone',
-                                        hintText: 'Enter your Phone Number',
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        FadeInUp(
-                          duration: const Duration(milliseconds: 1400),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "Gender",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Radio<String>(
-                                    value: 'Male',
-                                    groupValue: genderController.text,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        genderController.text =
-                                            value!; // Update the controller
-                                      });
-                                    },
-                                  ),
-                                  const Text("Male"),
-                                  const SizedBox(width: 15),
-                                  Radio<String>(
-                                    value: 'Female',
-                                    groupValue: genderController.text,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        genderController.text =
-                                            value!; // Update the controller
-                                      });
-                                    },
-                                  ),
-                                  const Text("Female"),
-                                  const SizedBox(width: 15),
-                                  Radio<String>(
-                                    value: 'Others',
-                                    groupValue: genderController.text,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        genderController.text =
-                                            value!; // Update the controller
-                                      });
-                                    },
-                                  ),
-                                  const Text("Others"),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        FadeInUp(
-                          duration: const Duration(milliseconds: 1500),
-                          child: Row(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: <Widget>[
+                          Row(
                             children: <Widget>[
                               Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "Age",
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black87,
+                                child: FadeInUp(
+                                  duration: const Duration(milliseconds: 1200),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      TextFormField(
+                                        controller: emailController,
+                                        decoration: InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          labelText: 'Email',
+                                          hintText: 'johndoe@example.com',
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Email field cannot be empty.';
+                                          } else if (!validateEmail(value)) {
+                                            return 'Please enter a valid email address (e.g., johndoe@example.com).';
+                                          }
+                                          return null;
+                                        },
                                       ),
-                                    ),
-                                    Row(
-                                      children: <Widget>[
-                                        IconButton(
-                                          icon: const Icon(Icons.remove),
-                                          onPressed: () {
-                                            setState(() {
-                                              if (_age > 0) _age--;
-                                            });
-                                          },
-                                        ),
-                                        Text(_age.toString()),
-                                        IconButton(
-                                          icon: const Icon(Icons.add),
-                                          onPressed: () {
-                                            setState(() {
-                                              if (_age < 120) _age++;
-                                            });
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                      const SizedBox(height: 10),
+                                    ],
+                                  ),
                                 ),
                               ),
+                              const SizedBox(
+                                  width:
+                                      10), // Add space between the two fields
                               Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "Are you a Active User?",
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                    CheckboxListTile(
-                                      title: const Text("Active"),
-                                      value: activeController,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          activeController = newValue!;
-                                        });
-                                      },
-                                      controlAffinity: ListTileControlAffinity
-                                          .leading, // leading Checkbox
-                                    ),
-                                    // const SizedBox(height: 10),
-                                  ],
+                                child: FadeInUp(
+                                  duration: const Duration(milliseconds: 1300),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      TextFormField(
+                                          controller: nameController,
+                                          decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: 'Name',
+                                            hintText:
+                                                'Enter First and Last Name',
+                                          ),
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Name field cannot be empty.';
+                                            } else if (!validateName(value)) {
+                                              return 'Please enter a valid Name(e.g., Name Surname).';
+                                            }
+                                            return null;
+                                          }),
+                                      const SizedBox(height: 10),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                        FadeInUp(
-                          duration: const Duration(milliseconds: 1700),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "User Type",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black87,
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: FadeInUp(
+                                  duration: const Duration(milliseconds: 1400),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      TextFormField(
+                                          controller: loginIdController,
+                                          decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: 'Login-ID',
+                                            hintText: 'Enter your Login-ID',
+                                          ),
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Login-ID field cannot be empty.';
+                                            } else if (!validateLoginId(
+                                                value)) {
+                                              return 'Please enter a valid login-id.';
+                                            }
+                                            return null;
+                                          }),
+                                      const SizedBox(height: 10),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Radio<String>(
-                                    value: 'pat',
-                                    groupValue: userController.text,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        userController.text = value!;
-                                      });
-                                    },
+                              const SizedBox(
+                                  width:
+                                      10), // Add space between the two fields
+                              Expanded(
+                                child: FadeInUp(
+                                  duration: const Duration(milliseconds: 1400),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      TextFormField(
+                                          controller: phoneController,
+                                          keyboardType: TextInputType.phone,
+                                          decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: 'Phone',
+                                            hintText: 'Enter your Phone Number',
+                                          ),
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Phone-No field cannot be empty.';
+                                            } else if (!validatePhone(value)) {
+                                              return 'Please enter a valid Phone Number(e.g., xxxxxxxxxx).';
+                                            }
+                                            return null;
+                                          }),
+                                      const SizedBox(height: 10),
+                                    ],
                                   ),
-                                  const Text("Patient"),
-                                  const SizedBox(width: 12),
-                                  Radio<String>(
-                                    value: 'doc',
-                                    groupValue: userController.text,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        userController.text = value!;
-                                      });
-                                    },
-                                  ),
-                                  const Text("Doctor"),
-                                  const SizedBox(width: 12),
-                                  Radio<String>(
-                                    value: 'adm',
-                                    groupValue: userController.text,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        userController.text = value!;
-                                      });
-                                    },
-                                  ),
-                                  const Text("Admin"),
-                                  const SizedBox(width: 12),
-                                ],
+                                ),
                               ),
-                              if (userController.text != 'pat') ...[
+                            ],
+                          ),
+                          FadeInUp(
+                            duration: const Duration(milliseconds: 1400),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Gender",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black87,
+                                  ),
+                                ),
                                 Row(
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 8.0),
-                                        child: TextFormField(
-                                          controller: desgnController,
-                                          decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Designation',
-                                            hintText: 'Enter your Designation',
-                                          ),
-                                        ),
-                                      ),
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Radio<String>(
+                                      value: 'Male',
+                                      groupValue: genderController.text,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          genderController.text =
+                                              value!; // Update the controller
+                                        });
+                                      },
                                     ),
-                                    Expanded(
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: DropdownButtonFormField<String>(
-                                          value: qualController,
-                                          isExpanded:
-                                              true, // Ensure the dropdown is fully expanded
-                                          decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Education',
-                                          ),
-                                          onChanged: (String? newValue) {
-                                            setState(() {
-                                              qualController = newValue;
-                                            });
-                                          },
-                                          items: qualifications
-                                              .map<DropdownMenuItem<String>>(
-                                                  (String value) {
-                                            return DropdownMenuItem<String>(
-                                              value: value,
-                                              child: Text(value),
-                                            );
-                                          }).toList(),
-                                        ),
-                                      ),
+                                    const Text("Male"),
+                                    const SizedBox(width: 15),
+                                    Radio<String>(
+                                      value: 'Female',
+                                      groupValue: genderController.text,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          genderController.text =
+                                              value!; // Update the controller
+                                        });
+                                      },
                                     ),
+                                    const Text("Female"),
+                                    const SizedBox(width: 15),
+                                    Radio<String>(
+                                      value: 'Others',
+                                      groupValue: genderController.text,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          genderController.text =
+                                              value!; // Update the controller
+                                        });
+                                      },
+                                    ),
+                                    const Text("Others"),
                                   ],
                                 ),
                               ],
-                              // const SizedBox(height: 5),
-                            ],
+                            ),
                           ),
-                        ),
-                        FadeInUp(
-                          duration: const Duration(milliseconds: 1800),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              const Text(
-                                "Password",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black87,
+                          FadeInUp(
+                            duration: const Duration(milliseconds: 1500),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "Age",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          IconButton(
+                                            icon: const Icon(Icons.remove),
+                                            onPressed: () {
+                                              setState(() {
+                                                if (_age > 0) _age--;
+                                              });
+                                            },
+                                          ),
+                                          Text(_age.toString()),
+                                          IconButton(
+                                            icon: const Icon(Icons.add),
+                                            onPressed: () {
+                                              setState(() {
+                                                if (_age < 120) _age++;
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              TextFormField(
-                                controller:
-                                    pwdController, // Assign the controller here
-                                obscureText: _obscurePassword,
-                                decoration: InputDecoration(
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _obscurePassword
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _obscurePassword = !_obscurePassword;
-                                      });
-                                    },
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 0, horizontal: 10),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.grey.shade400),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.grey.shade400),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "Are you a Active User?",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      CheckboxListTile(
+                                        title: const Text("Active"),
+                                        value: activeController,
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            activeController = newValue!;
+                                          });
+                                        },
+                                        controlAffinity: ListTileControlAffinity
+                                            .leading, // leading Checkbox
+                                      ),
+                                      // const SizedBox(height: 10),
+                                    ],
                                   ),
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your password';
-                                  }
-                                  if (value.length < 6) {
-                                    return 'Password must be at least 6 characters long';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 10),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        FadeInUp(
-                          duration: const Duration(milliseconds: 1900),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              const Text(
-                                "Confirm Password",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              TextFormField(
-                                controller:
-                                    confirmPwdController, // Assign the controller here
-                                obscureText: _obscureConfirmPassword,
-                                decoration: InputDecoration(
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _obscureConfirmPassword
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _obscureConfirmPassword =
-                                            !_obscureConfirmPassword;
-                                      });
-                                    },
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 0, horizontal: 10),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.grey.shade400),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.grey.shade400),
-                                  ),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please confirm your password';
-                                  }
-                                  if (value != pwdController.text) {
-                                    return 'Passwords do not match';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (value) {
-                                  // Optionally check passwords as the user types
-                                  setState(() {
-                                    // This triggers a rebuild if you want to show a message or update UI based on match
-                                    _passwordsMatch();
-                                  });
-                                },
-                              ),
-                              // const SizedBox(height: 10),
-                              // Optionally display a message if passwords don't match
-                              if (!_passwordsMatch())
+                          FadeInUp(
+                            duration: const Duration(milliseconds: 1700),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 const Text(
-                                  "Passwords do not match",
-                                  style: TextStyle(color: Colors.red),
+                                  "User Type",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black87,
+                                  ),
                                 ),
-                            ],
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Radio<String>(
+                                      value: 'pat',
+                                      groupValue: userController.text,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          userController.text = value!;
+                                        });
+                                      },
+                                    ),
+                                    const Text("Patient"),
+                                    const SizedBox(width: 12),
+                                    Radio<String>(
+                                      value: 'doc',
+                                      groupValue: userController.text,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          userController.text = value!;
+                                        });
+                                      },
+                                    ),
+                                    const Text("Doctor"),
+                                    const SizedBox(width: 12),
+                                    Radio<String>(
+                                      value: 'adm',
+                                      groupValue: userController.text,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          userController.text = value!;
+                                        });
+                                      },
+                                    ),
+                                    const Text("Admin"),
+                                    const SizedBox(width: 12),
+                                  ],
+                                ),
+                                if (userController.text != 'pat') ...[
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 8.0),
+                                          child: TextFormField(
+                                              controller: desgnController,
+                                              decoration: const InputDecoration(
+                                                border: OutlineInputBorder(),
+                                                labelText: 'Designation',
+                                                hintText:
+                                                    'Enter your Designation',
+                                              ),
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return 'Designation field cannot be empty.';
+                                                } else if (!validateLoginId(
+                                                    value)) {
+                                                  return 'Please enter a valid Designation.';
+                                                }
+                                                return null;
+                                              }),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 8.0),
+                                          child:
+                                              DropdownButtonFormField<String>(
+                                            value: qualController,
+                                            isExpanded:
+                                                true, // Ensure the dropdown is fully expanded
+                                            decoration: const InputDecoration(
+                                              border: OutlineInputBorder(),
+                                              labelText: 'Education',
+                                            ),
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                qualController = newValue;
+                                              });
+                                            },
+                                            items: qualifications
+                                                .map<DropdownMenuItem<String>>(
+                                                    (String value) {
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Text(value),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                                // const SizedBox(height: 5),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                          FadeInUp(
+                            duration: const Duration(milliseconds: 1800),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                const Text(
+                                  "Password",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                TextFormField(
+                                  controller:
+                                      pwdController, // Assign the controller here
+                                  obscureText: _obscurePassword,
+                                  decoration: InputDecoration(
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _obscurePassword
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _obscurePassword = !_obscurePassword;
+                                        });
+                                      },
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        vertical: 0, horizontal: 10),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade400),
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade400),
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter your password';
+                                    }
+                                    if (value.length < 6) {
+                                      return 'Password must be at least 6 characters long';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            ),
+                          ),
+                          FadeInUp(
+                            duration: const Duration(milliseconds: 1900),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                const Text(
+                                  "Confirm Password",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                TextFormField(
+                                  controller:
+                                      confirmPwdController, // Assign the controller here
+                                  obscureText: _obscureConfirmPassword,
+                                  decoration: InputDecoration(
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _obscureConfirmPassword
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _obscureConfirmPassword =
+                                              !_obscureConfirmPassword;
+                                        });
+                                      },
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        vertical: 0, horizontal: 10),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade400),
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade400),
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please confirm your password';
+                                    }
+                                    if (value != pwdController.text) {
+                                      return 'Passwords do not match';
+                                    }
+                                    return null;
+                                  },
+                                  onChanged: (value) {
+                                    // Optionally check passwords as the user types
+                                    setState(() {
+                                      // This triggers a rebuild if you want to show a message or update UI based on match
+                                      _passwordsMatch();
+                                    });
+                                  },
+                                ),
+                                // const SizedBox(height: 10),
+                                // Optionally display a message if passwords don't match
+                                if (!_passwordsMatch())
+                                  const Text(
+                                    "Passwords do not match",
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.2),
@@ -549,31 +647,33 @@ class _SignupPageState extends State<SignupPage> {
                       minWidth: double.infinity,
                       height: 60,
                       onPressed: () async {
-                        if (kDebugMode) {
-                          User user = User(
-                              "",
-                              loginIdController.text,
-                              pwdController.text,
-                              nameController.text,
-                              _age,
-                              genderController.text,
-                              phoneController.text,
-                              emailController.text,
-                              desgnController.text,
-                              qualController!,
-                              userController.text,
-                              activeController);
-                          List<String> response =
-                              (await service.saveUser(user));
-                          print(response[0]);
-                          print(response[1]);
-                          print(response[2]);
-                          // Use the helper function to show the alert dialog
-                          helper.showAlertDialog(
-                            context,
-                            response[1], // Title
-                            response[2], // Content
-                          );
+                        if (_formKey.currentState!.validate()) {
+                          if (kDebugMode) {
+                            User user = User(
+                                "",
+                                loginIdController.text,
+                                pwdController.text,
+                                nameController.text,
+                                _age,
+                                genderController.text,
+                                phoneController.text,
+                                emailController.text,
+                                desgnController.text,
+                                qualController!,
+                                userController.text,
+                                activeController);
+                            List<String> response =
+                                (await service.saveUser(user));
+                            print(response[0]);
+                            print(response[1]);
+                            print(response[2]);
+                            // Use the helper function to show the alert dialog
+                            helper.showAlertDialog(
+                              context,
+                              response[1], // Title
+                              response[2], // Content
+                            );
+                          }
                         }
                       },
                       color: Colors.greenAccent,
