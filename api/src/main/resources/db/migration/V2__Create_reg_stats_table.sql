@@ -1,0 +1,5 @@
+CREATE TABLE reg_stats (
+    id VARCHAR(255) NOT NULL PRIMARY KEY,
+    date DATE NOT NULL,
+    count INTEGER DEFAULT 0
+);
