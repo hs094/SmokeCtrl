@@ -1,719 +1,448 @@
+import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:telmed/pages/home.dart';
 import 'package:telmed/utils/constants.dart';
 import 'package:telmed/services/register.dart';
-import 'package:flutter/foundation.dart';
 import 'package:telmed/pages/login.dart';
 import 'package:telmed/models/user.dart';
 import 'package:telmed/utils/helper_func.dart';
-import 'package:flutter/material.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
+
   @override
   State<SignupPage> createState() => _SignupPageState();
 }
 
 class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _passwordStrengthNotifier = ValueNotifier<double>(0.0);
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _genderController = TextEditingController(text: 'Male');
+  final TextEditingController _loginIdController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _pwdController = TextEditingController();
+  final TextEditingController _confirmPwdController = TextEditingController();
+
+  int _age = 18;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  TextEditingController emailController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
-  TextEditingController genderController = TextEditingController(text: 'Male');
-  TextEditingController loginIdController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  int _age = 18;
-  bool activeController = false;
-  TextEditingController userController = TextEditingController(text: 'pat');
-  TextEditingController pwdController = TextEditingController();
-  TextEditingController confirmPwdController = TextEditingController();
-  TextEditingController desgnController = TextEditingController();
-
-  final RegExp emailRegex = RegExp(
-      r'^[\w-]+(\.[\w-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.([a-zA-Z]{2,})$');
-  final RegExp nameRegex = RegExp(r'^[a-zA-Z ]+$');
-  final RegExp loginIdRegex = RegExp(r'^[a-zA-Z]+$');
-  final RegExp phoneRegex = RegExp(r'^\d{10}$');
-  final RegExp designationRegex = RegExp(r'^[a-zA-Z ]+$');
-  final RegExp passwordRegex = RegExp(
-      r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,15}$');
-
-  String? qualController;
-  RegisterUser service = RegisterUser();
-  HelperFunc helper = HelperFunc();
+  String? _qualification = qualifications.first;
 
   @override
-  void initState() {
-    super.initState();
-    qualController = qualifications.first;
+  void dispose() {
+    _passwordStrengthNotifier.dispose();
+    super.dispose();
   }
 
-  bool validateEmail(String email) {
-    return emailRegex.hasMatch(email);
+  void _calculatePasswordStrength(String password) {
+    double strength = 0.0;
+    if (password.length >= 8) strength += 0.3;
+    if (password.contains(RegExp(r'[A-Z]'))) strength += 0.2;
+    if (password.contains(RegExp(r'[a-z]'))) strength += 0.2;
+    if (password.contains(RegExp(r'[0-9]'))) strength += 0.2;
+    if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) strength += 0.1;
+    _passwordStrengthNotifier.value = strength.clamp(0.0, 1.0);
   }
 
-  bool validateName(String name) {
-    return nameRegex.hasMatch(name);
+  void _showCloudAlert(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (context) => CloudAlertDialog(
+        title: title,
+        content: content,
+      ),
+    );
   }
 
-  bool validateLoginId(String loginId) {
-    return loginIdRegex.hasMatch(loginId);
-  }
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
 
-  bool validatePhone(String phone) {
-    return phoneRegex.hasMatch(phone);
-  }
+    if (_pwdController.text != _confirmPwdController.text) {
+      _showCloudAlert('Password Mismatch', 'Passwords do not match');
+      return;
+    }
 
-  bool validateDesignation(String designation) {
-    return designationRegex.hasMatch(designation);
-  }
+    final user = User(
+      "",
+      _loginIdController.text,
+      _pwdController.text,
+      _nameController.text,
+      _age,
+      _genderController.text,
+      _phoneController.text,
+      _emailController.text,
+      "",
+      _qualification!,
+      'pat',
+      false,
+    );
 
-  bool validatePassword(String password) {
-    return passwordRegex.hasMatch(password);
-  }
-
-  bool _passwordsMatch() {
-    return pwdController.text == confirmPwdController.text;
+    final response = await RegisterUser().saveUser(user);
+    HelperFunc().showAlertDialog(context, response[1], response[2]);
   }
 
   @override
-/// Builds the sign-up screen for the application.
-  ///
-  /// This widget creates the sign-up screen, which includes input fields for email, name, login ID, phone number, gender, age, user type, designation, and education. It also includes password and confirm password fields, as well as a sign-up button and a link to the login page.
-  ///
-  /// The widget uses various validation functions to ensure that the user input is valid, and displays error messages if any of the fields are invalid. It also uses the `RegisterUser` and `HelperFunc` services to handle the sign-up process.
-  ///
-  /// The widget is designed to be responsive and uses the `FadeInUp` animation to provide a smooth user experience.
-    Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
-        resizeToAvoidBottomInset: true,
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          leading: IconButton(
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const HomePage()));
-            },
-            icon: const Icon(
-              Icons.arrow_back_ios,
-              size: 20,
-              color: Colors.black,
+      key: _scaffoldKey,
+      backgroundColor: Colors.grey.shade100,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                FadeInUp(
+                  duration: const Duration(milliseconds: 800),
+                  child: const Text(
+                    "Create Account",
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepPurple,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Name Field
+                _buildInputField(
+                  label: 'Full Name',
+                  controller: _nameController,
+                  icon: Icons.person,
+                  validator: (value) => value!.isEmpty 
+                      ? 'Please enter your name' 
+                      : null,
+                ),
+
+                // Email Field
+                _buildInputField(
+                  label: 'Email Address',
+                  controller: _emailController,
+                  icon: Icons.email,
+                  validator: (value) => !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)
+                      ? 'Enter a valid email address'
+                      : null,
+                ),
+
+                // Login ID Field
+                _buildInputField(
+                  label: 'Login ID',
+                  controller: _loginIdController,
+                  icon: Icons.alternate_email,
+                  validator: (value) => value!.isEmpty
+                      ? 'Login ID is required'
+                      : null,
+                ),
+
+                // Phone Field
+                _buildInputField(
+                  label: 'Phone Number',
+                  controller: _phoneController,
+                  icon: Icons.phone,
+                  keyboardType: TextInputType.phone,
+                  validator: (value) => value!.length != 10 
+                      ? 'Enter 10-digit phone number' 
+                      : null,
+                ),
+
+                // Gender and Age Row
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildDropdown(
+                        value: _genderController.text,
+                        items: const ['Male', 'Female', 'Other'],
+                        onChanged: (value) => setState(() => _genderController.text = value!),
+                        label: 'Gender',
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _buildAgeSelector(),
+                    ),
+                  ],
+                ),
+
+                // Password Field
+                _buildPasswordField(
+                  label: 'Password',
+                  controller: _pwdController,
+                  obscure: _obscurePassword,
+                  onChanged: _calculatePasswordStrength,
+                  onToggle: () => setState(() => _obscurePassword = !_obscurePassword),
+                ),
+                _buildPasswordStrengthIndicator(),
+
+                // Confirm Password Field
+                _buildPasswordField(
+                  label: 'Confirm Password',
+                  controller: _confirmPwdController,
+                  obscure: _obscureConfirmPassword,
+                  onToggle: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                ),
+
+                const SizedBox(height: 32),
+                _buildSubmitButton(),
+                _buildLoginLink(),
+              ],
             ),
           ),
         ),
-        body: Stack(children: <Widget>[
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Column(
-                children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      FadeInUp(
-                        duration: const Duration(milliseconds: 1000),
-                        child: const Text(
-                          "Sign Up",
-                          style: TextStyle(
-                              fontSize: 36, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: FadeInUp(
-                                  duration: const Duration(milliseconds: 1200),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      TextFormField(
-                                        controller: emailController,
-                                        decoration: InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          labelText: 'Email',
-                                          hintText: 'johndoe@example.com',
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Email field cannot be empty.';
-                                          } else if (!validateEmail(value)) {
-                                            return 'Please enter a valid email address (e.g., johndoe@example.com).';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      const SizedBox(height: 10),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                  width:
-                                      10), // Add space between the two fields
-                              Expanded(
-                                child: FadeInUp(
-                                  duration: const Duration(milliseconds: 1300),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      TextFormField(
-                                          controller: nameController,
-                                          decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Name',
-                                            hintText:
-                                                'Enter First and Last Name',
-                                          ),
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Name field cannot be empty.';
-                                            } else if (!validateName(value)) {
-                                              return 'Please enter a valid Name(e.g., Name Surname).';
-                                            }
-                                            return null;
-                                          }),
-                                      const SizedBox(height: 10),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: FadeInUp(
-                                  duration: const Duration(milliseconds: 1400),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      TextFormField(
-                                          controller: loginIdController,
-                                          decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Login-ID',
-                                            hintText: 'Enter your Login-ID',
-                                          ),
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Login-ID field cannot be empty.';
-                                            } else if (!validateLoginId(
-                                                value)) {
-                                              return 'Please enter a valid login-id.';
-                                            }
-                                            return null;
-                                          }),
-                                      const SizedBox(height: 10),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                  width:
-                                      10), // Add space between the two fields
-                              Expanded(
-                                child: FadeInUp(
-                                  duration: const Duration(milliseconds: 1400),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      TextFormField(
-                                          controller: phoneController,
-                                          keyboardType: TextInputType.phone,
-                                          decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Phone',
-                                            hintText: 'Enter your Phone Number',
-                                          ),
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Phone-No field cannot be empty.';
-                                            } else if (!validatePhone(value)) {
-                                              return 'Please enter a valid Phone Number(e.g., xxxxxxxxxx).';
-                                            }
-                                            return null;
-                                          }),
-                                      const SizedBox(height: 10),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          FadeInUp(
-                            duration: const Duration(milliseconds: 1400),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "Gender",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Radio<String>(
-                                      value: 'Male',
-                                      groupValue: genderController.text,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          genderController.text =
-                                              value!; // Update the controller
-                                        });
-                                      },
-                                    ),
-                                    const Text("Male"),
-                                    const SizedBox(width: 15),
-                                    Radio<String>(
-                                      value: 'Female',
-                                      groupValue: genderController.text,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          genderController.text =
-                                              value!; // Update the controller
-                                        });
-                                      },
-                                    ),
-                                    const Text("Female"),
-                                    const SizedBox(width: 15),
-                                    Radio<String>(
-                                      value: 'Others',
-                                      groupValue: genderController.text,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          genderController.text =
-                                              value!; // Update the controller
-                                        });
-                                      },
-                                    ),
-                                    const Text("Others"),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          FadeInUp(
-                            duration: const Duration(milliseconds: 1500),
-                            child: Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        "Age",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                      Row(
-                                        children: <Widget>[
-                                          IconButton(
-                                            icon: const Icon(Icons.remove),
-                                            onPressed: () {
-                                              setState(() {
-                                                if (_age > 0) _age--;
-                                              });
-                                            },
-                                          ),
-                                          Text(_age.toString()),
-                                          IconButton(
-                                            icon: const Icon(Icons.add),
-                                            onPressed: () {
-                                              setState(() {
-                                                if (_age < 120) _age++;
-                                              });
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        "Are you a Active User?",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                      CheckboxListTile(
-                                        title: const Text("Active"),
-                                        value: activeController,
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            activeController = newValue!;
-                                          });
-                                        },
-                                        controlAffinity: ListTileControlAffinity
-                                            .leading, // leading Checkbox
-                                      ),
-                                      // const SizedBox(height: 10),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          FadeInUp(
-                            duration: const Duration(milliseconds: 1700),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "User Type",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Radio<String>(
-                                      value: 'pat',
-                                      groupValue: userController.text,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          userController.text = value!;
-                                        });
-                                      },
-                                    ),
-                                    const Text("Patient"),
-                                    const SizedBox(width: 12),
-                                    Radio<String>(
-                                      value: 'doc',
-                                      groupValue: userController.text,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          userController.text = value!;
-                                        });
-                                      },
-                                    ),
-                                    const Text("Doctor"),
-                                    const SizedBox(width: 12),
-                                    Radio<String>(
-                                      value: 'adm',
-                                      groupValue: userController.text,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          userController.text = value!;
-                                        });
-                                      },
-                                    ),
-                                    const Text("Admin"),
-                                    const SizedBox(width: 12),
-                                  ],
-                                ),
-                                if (userController.text != 'pat') ...[
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 8.0),
-                                          child: TextFormField(
-                                              controller: desgnController,
-                                              decoration: const InputDecoration(
-                                                border: OutlineInputBorder(),
-                                                labelText: 'Designation',
-                                                hintText:
-                                                    'Enter your Designation',
-                                              ),
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return 'Designation field cannot be empty.';
-                                                } else if (!validateLoginId(
-                                                    value)) {
-                                                  return 'Please enter a valid Designation.';
-                                                }
-                                                return null;
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 8.0),
-                                          child:
-                                              DropdownButtonFormField<String>(
-                                            value: qualController,
-                                            isExpanded:
-                                                true, // Ensure the dropdown is fully expanded
-                                            decoration: const InputDecoration(
-                                              border: OutlineInputBorder(),
-                                              labelText: 'Education',
-                                            ),
-                                            onChanged: (String? newValue) {
-                                              setState(() {
-                                                qualController = newValue;
-                                              });
-                                            },
-                                            items: qualifications
-                                                .map<DropdownMenuItem<String>>(
-                                                    (String value) {
-                                              return DropdownMenuItem<String>(
-                                                value: value,
-                                                child: Text(value),
-                                              );
-                                            }).toList(),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                                // const SizedBox(height: 5),
-                              ],
-                            ),
-                          ),
-                          FadeInUp(
-                            duration: const Duration(milliseconds: 1800),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                const Text(
-                                  "Password",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                TextFormField(
-                                  controller:
-                                      pwdController, // Assign the controller here
-                                  obscureText: _obscurePassword,
-                                  decoration: InputDecoration(
-                                    suffixIcon: IconButton(
-                                      icon: Icon(
-                                        _obscurePassword
-                                            ? Icons.visibility
-                                            : Icons.visibility_off,
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          _obscurePassword = !_obscurePassword;
-                                        });
-                                      },
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 0, horizontal: 10),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.grey.shade400),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.grey.shade400),
-                                    ),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter your password';
-                                    }
-                                    if (value.length < 6) {
-                                      return 'Password must be at least 6 characters long';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: 10),
-                              ],
-                            ),
-                          ),
-                          FadeInUp(
-                            duration: const Duration(milliseconds: 1900),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                const Text(
-                                  "Confirm Password",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                TextFormField(
-                                  controller:
-                                      confirmPwdController, // Assign the controller here
-                                  obscureText: _obscureConfirmPassword,
-                                  decoration: InputDecoration(
-                                    suffixIcon: IconButton(
-                                      icon: Icon(
-                                        _obscureConfirmPassword
-                                            ? Icons.visibility
-                                            : Icons.visibility_off,
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          _obscureConfirmPassword =
-                                              !_obscureConfirmPassword;
-                                        });
-                                      },
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 0, horizontal: 10),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.grey.shade400),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.grey.shade400),
-                                    ),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please confirm your password';
-                                    }
-                                    if (value != pwdController.text) {
-                                      return 'Passwords do not match';
-                                    }
-                                    return null;
-                                  },
-                                  onChanged: (value) {
-                                    // Optionally check passwords as the user types
-                                    setState(() {
-                                      // This triggers a rebuild if you want to show a message or update UI based on match
-                                      _passwordsMatch();
-                                    });
-                                  },
-                                ),
-                                // const SizedBox(height: 10),
-                                // Optionally display a message if passwords don't match
-                                if (!_passwordsMatch())
-                                  const Text(
-                                    "Passwords do not match",
-                                    style: TextStyle(color: Colors.red),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.2),
-                ],
+      ),
+    );
+  }
+
+  Widget _buildInputField({
+    required String label,
+    required TextEditingController controller,
+    required IconData icon,
+    required String? Function(String?) validator,
+    TextInputType? keyboardType,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(icon, color: Colors.deepPurple),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+        validator: validator,
+      ),
+    );
+  }
+
+  Widget _buildPasswordField({
+    required String label,
+    required TextEditingController controller,
+    required bool obscure,
+    required VoidCallback onToggle,
+    void Function(String)? onChanged,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        obscureText: obscure,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: const Icon(Icons.lock, color: Colors.deepPurple),
+          suffixIcon: IconButton(
+            icon: Icon(obscure ? Icons.visibility : Icons.visibility_off),
+            onPressed: onToggle,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPasswordStrengthIndicator() {
+    return ValueListenableBuilder<double>(
+      valueListenable: _passwordStrengthNotifier,
+      builder: (context, strength, _) {
+        final color = strength < 0.4 ? Colors.red 
+            : strength < 0.7 ? Colors.orange 
+            : Colors.green;
+            
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: LinearProgressIndicator(
+            value: strength,
+            backgroundColor: Colors.grey.shade300,
+            color: color,
+            minHeight: 6,
+            borderRadius: BorderRadius.circular(3),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDropdown({
+    required String value,
+    required List<String> items,
+    required void Function(String?) onChanged,
+    required String label,
+  }) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: Colors.white,
+      ),
+      items: items.map((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+      onChanged: onChanged,
+    );
+  }
+
+  Widget _buildAgeSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Age', style: TextStyle(color: Colors.deepPurple)),
+        Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.remove_circle),
+              color: Colors.deepPurple,
+              onPressed: () => setState(() => _age = _age > 0 ? _age - 1 : 0),
+            ),
+            Text('$_age', style: const TextStyle(fontSize: 18)),
+            IconButton(
+              icon: const Icon(Icons.add_circle),
+              color: Colors.deepPurple,
+              onPressed: () => setState(() => _age = _age < 100 ? _age + 1 : 100),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return ElevatedButton(
+      onPressed: _submitForm,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.deepPurple,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      child: const Text(
+        'SIGN UP',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoginLink() {
+    return TextButton(
+      onPressed: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      ),
+      child: RichText(
+        text: const TextSpan(
+          style: TextStyle(color: Colors.grey),
+          children: [
+            TextSpan(text: 'Already have an account? '),
+            TextSpan(
+              text: 'Login',
+              style: TextStyle(
+                color: Colors.deepPurple,
+                fontWeight: FontWeight.bold,
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CloudAlertDialog extends StatelessWidget {
+  final String title;
+  final String content;
+
+  const CloudAlertDialog({
+    super.key,
+    required this.title,
+    required this.content,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: ClipPath(
+        clipper: CloudClipper(),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: FadeInUp(
-              duration: const Duration(milliseconds: 2000),
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    MaterialButton(
-                      minWidth: double.infinity,
-                      height: 60,
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          if (kDebugMode) {
-                            User user = User(
-                                "",
-                                loginIdController.text,
-                                pwdController.text,
-                                nameController.text,
-                                _age,
-                                genderController.text,
-                                phoneController.text,
-                                emailController.text,
-                                desgnController.text,
-                                qualController!,
-                                userController.text,
-                                activeController);
-                            List<String> response =
-                                (await service.saveUser(user));
-                            print(response[0]);
-                            print(response[1]);
-                            print(response[2]);
-                            // Use the helper function to show the alert dialog
-                            helper.showAlertDialog(
-                              context,
-                              response[1], // Title
-                              response[2], // Content
-                            );
-                          }
-                        }
-                      },
-                      color: Colors.greenAccent,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50)),
-                      child: const Text(
-                        "Sign up",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 18),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        const Text("Already have an account?"),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const LoginPage()),
-                            );
-                          },
-                          child: const Text(
-                            "  Login",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700, fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 7,
-                    )
-                  ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
                 ),
               ),
-            ),
+              const SizedBox(height: 12),
+              Text(content, textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('OK', style: TextStyle(color: Colors.white)),
+              ),
+            ],
           ),
-        ]));
+        ),
+      ),
+    );
   }
+}
+
+class CloudClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.moveTo(size.width * 0.3, 0);
+    path.quadraticBezierTo(size.width * 0.4, -20, size.width * 0.5, 0);
+    path.quadraticBezierTo(size.width * 0.6, -20, size.width * 0.7, 0);
+    path.lineTo(size.width, 0);
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

@@ -233,24 +233,61 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<http.Response> loginUser(BuildContext context, String loginid, String pwd) async {
-    var uri = Uri.parse("http://localhost:8080/auth/login");
-    Map<String, String> headers = {"Content-Type": "application/json"};
-    var body = json.encode({
-      'loginid': loginid,
-      'pwd': pwd,
-    });
-    var response = await http.post(uri, headers: headers, body: body);
+  Future<http.Response> fetchFakeUser() async {
+  Map<String, dynamic> fakeUserJson = {
+    "userid": "U123456",
+    "loginid": "john_doe92",
+    "pwd": "P@ssw0rd!",
+    "name": "John Doe",
+    "age": 31,
+    "sex": "Male",
+    "phone": "+1-555-789-1234",
+    "email": "john.doe@example.com",
+    "designation": "Software Engineer",
+    "qualification": "M.Sc. Computer Science",
+    "userType": "Admin",
+    "active": true,
+  };
 
-    if (response.statusCode == 200 && response.body.isNotEmpty) {
+  return Future.value(
+    http.Response(jsonEncode(fakeUserJson), 200, headers: {
+      'Content-Type': 'application/json',
+    }),
+  );
+}
+
+  Future<http.Response> loginUser(BuildContext context, String loginid, String pwd) async {
+    // var uri = Uri.parse("http://localhost:8080/auth/login");
+    // Map<String, String> headers = {"Content-Type": "application/json"};
+    // var body = json.encode({
+    //   'loginid': loginid,
+    //   'pwd': pwd,
+    // });
+    // var response = await http.post(uri, headers: headers, body: body);
+    var response = await fetchFakeUser();
+    User fakeUser = User(
+                "U123456",
+                "john_doe92",
+                "P@ssw0rd!",
+                "John Doe",
+                31,
+                "Male",
+                "+1-555-789-1234",
+                "john.doe@example.com",
+                "Software Engineer",
+                "M.Sc. Computer Science",
+                "Admin",
+                true,);
+    if(true) {
+    // if (response.statusCode == 200 && response.body.isNotEmpty) {
       try {
-        Map<String, dynamic> jsonResponse = json.decode(response.body);
-        User user = User.fromJson(jsonResponse);
+        // Map<String, dynamic> jsonResponse = json.decode(response.body);
+        // User user = User.fromJson(jsonResponse);
         if (context.mounted) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => DashBoard(user: user),
+              builder: (context) => DashBoard(user: fakeUser),
             ),
           );
         }
@@ -259,17 +296,7 @@ class _LoginPageState extends State<LoginPage> {
           print('Error parsing JSON response: $e');
         }
       }
-    } else {
-      if (kDebugMode) {
-        print("Login failed with status code: ${response.statusCode}");
-        helper.showAlertDialog(
-          context,
-          "Login Failed !", // Title
-          "Either your Login-Id or Password is Incorrect.", // Content
-        );
       }
+      return response;
     }
-    return response;
   }
-
-}
