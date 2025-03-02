@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class ChatPage extends StatefulWidget {
   static const routeName = '/chat';
-  
+
   final User user;
 
   const ChatPage({Key? key, required this.user}) : super(key: key);
@@ -17,18 +17,21 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _chatController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNode = FocusNode();
   final List<Map<String, dynamic>> _chatHistory = [];
+  bool useRAG = false; // Toggle for RAG
   late User user;
 
   @override
   void initState() {
     super.initState();
-    user = widget.user; // Initialize the user from the widget
+    user = widget.user;
   }
 
 
 Future<void> getAnswer(String userid, String prompt) async {
-  final uri = Uri.parse("http://10.5.29.253:8000/inference/");
+  final String endpoint = useRAG ? "/rag/inference/" : "/inference/";
+  final uri = Uri.parse("http://10.5.29.253:8000$endpoint");
   final requestBody = jsonEncode({
     "prompt": prompt,
     "max_tokens": 128,
@@ -102,20 +105,33 @@ Future<void> getAnswer(String userid, String prompt) async {
   }
 }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-          title: const Text("ChatMEDiX",
-              style: TextStyle(fontWeight: FontWeight.bold))),
+        title: const Text("ChatMEDiX",
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        actions: [
+          Row(
+            children: [
+              const Text("Use RAG", style: TextStyle(fontSize: 16)),
+              Switch(
+                value: useRAG,
+                onChanged: (value) {
+                  setState(() {
+                    useRAG = value;
+                  });
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            // Chat history list view
-            Padding(
-              padding: const EdgeInsets.only(bottom: 40.0),
+            Expanded(
               child: ListView.builder(
                 itemCount: _chatHistory.length,
                 controller: _scrollController,
@@ -132,14 +148,6 @@ Future<void> getAnswer(String userid, String prompt) async {
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
                           color: (_chatHistory[index]["isSender"]
                               ? const Color(0xFFF69170)
                               : Colors.white),
@@ -160,197 +168,72 @@ Future<void> getAnswer(String userid, String prompt) async {
                 },
               ),
             ),
-            // Chat input area
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                color: Colors.grey[200],
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                          decoration: const BoxDecoration(
-                            border: GradientBoxBorder(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Colors.grey,
-                                  Colors.grey,
-                                ],
-                              ),
-                            ),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(25.0)),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              color: Colors.grey[200],
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25),
+                        color: Colors.white,
+                      ),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minHeight: 45,
+                          maxHeight: 150, // Expandable input
+                        ),
+                        child: TextField(
+                          controller: _chatController,
+                          focusNode: _focusNode,
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          decoration: const InputDecoration(
+                            hintText: "Type a message...",
+                            border: InputBorder.none,
                           ),
-                          child: Stack(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 8.0, right: 50.0),
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    hintText: "Type a message . . . .",
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.all(8.0),
-                                  ),
-                                  controller: _chatController,
-                                ),
-                              ),
-                              Positioned(
-                                right: 0,
-                                top: 0,
-                                bottom: 0,
-                                child: MaterialButton(
-                                  minWidth: 50.0,
-                                  height: 45.0,
-                                  onPressed: () {
-                                    // Storing the text to send it to getAnswer before clearing
-                                    String message = _chatController.text;
-
-                                    setState(() {
-                                      if (message.isNotEmpty) {
-                                        _chatHistory.add({
-                                          "time": DateTime.now(),
-                                          "message": message,
-                                          "isSender": true,
-                                        });
-                                        _chatController.clear();
-                                      }
-                                    });
-
-                                    // Make sure to call getAnswer after clearing the chat controller
-                                    getAnswer(user.userid , message);
-
-                                    // // Ensuring scrolling happens after the UI is updated
-                                    WidgetsBinding.instance
-                                        .addPostFrameCallback((_) {
-                                      _scrollController.jumpTo(
-                                        _scrollController
-                                            .position.maxScrollExtent,
-                                      );
-                                    });
-                                  },
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(25.0),
-                                  ),
-                                  padding: const EdgeInsets.all(0.0),
-                                  child: Ink(
-                                    decoration: const BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          Colors.black,
-                                          Colors.black,
-                                        ],
-                                      ),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(25.0)),
-                                    ),
-                                    child: Container(
-                                      constraints: const BoxConstraints(
-                                          minWidth: 50.0, minHeight: 45.0),
-                                      alignment: Alignment.center,
-                                      child: const Icon(
-                                        Icons.arrow_upward_sharp,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )),
+                        ),
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 8),
+                  FloatingActionButton(
+                    onPressed: () {
+                      String message = _chatController.text.trim();
+
+                      if (message.isNotEmpty) {
+                        setState(() {
+                          _chatHistory.add({
+                            "time": DateTime.now(),
+                            "message": message,
+                            "isSender": true,
+                          });
+                          _chatController.clear();
+                        });
+
+                        getAnswer(user.userid, message);
+
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (_scrollController.hasClients) {
+                            _scrollController.jumpTo(
+                                _scrollController.position.maxScrollExtent);
+                          }
+                        });
+                      }
+                    },
+                    backgroundColor: Colors.black,
+                    child: const Icon(Icons.arrow_upward, color: Colors.white),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
     );
-  }
-}
-
-class GradientBoxBorder extends BoxBorder {
-  final Gradient gradient;
-  final double width;
-
-  const GradientBoxBorder({
-    required this.gradient,
-    this.width = 1.0,
-  });
-
-  @override
-  EdgeInsetsGeometry get dimensions => EdgeInsets.all(width);
-
-  @override
-  Path getInnerPath(Rect rect, {TextDirection? textDirection}) {
-    return Path()
-      ..addRect(Rect.fromLTWH(
-        rect.left + width / 2,
-        rect.top + width / 2,
-        rect.width - width,
-        rect.height - width,
-      ));
-  }
-
-  @override
-  Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
-    return Path()..addRect(rect);
-  }
-
-  @override
-  ShapeBorder scale(double t) {
-    return GradientBoxBorder(
-      gradient: gradient,
-      width: width * t,
-    );
-  }
-
-  @override
-  bool get isUniform => true;
-
-  @override
-  // TODO: implement bottom
-  BorderSide get bottom => throw UnimplementedError();
-
-  @override
-  /* TODO: implement top */
-  BorderSide get top => throw UnimplementedError();
-
-  @override
-  void paint(Canvas canvas, Rect rect,
-      {TextDirection? textDirection,
-      BoxShape shape = BoxShape.rectangle,
-      BorderRadius? borderRadius}) {
-    {
-      final Paint paint = Paint()
-        ..shader = gradient.createShader(rect)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = width;
-
-      if (shape == BoxShape.rectangle) {
-        final RRect rRect = borderRadius != null
-            ? RRect.fromRectAndCorners(
-                rect,
-                topLeft: borderRadius.topLeft,
-                topRight: borderRadius.topRight,
-                bottomLeft: borderRadius.bottomLeft,
-                bottomRight: borderRadius.bottomRight,
-              )
-            : RRect.fromRectXY(rect, 0, 0);
-
-        canvas.drawRRect(rRect, paint);
-      } else {
-        canvas.drawOval(rect, paint);
-      }
-    }
   }
 }
