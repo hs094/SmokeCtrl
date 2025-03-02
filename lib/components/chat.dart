@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:telmed/models/user.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
@@ -27,44 +26,82 @@ class _ChatPageState extends State<ChatPage> {
     user = widget.user; // Initialize the user from the widget
   }
 
-  void getAnswer(String userid, String prompt) async {
-    List<Map<String, String>> msg = [
-      {"content": prompt}
-    ];
 
-    for (var i = 0; i < _chatHistory.length; i++) {
-      msg.add({"content": _chatHistory[i]["message"]});
-    }
+Future<void> getAnswer(String userid, String prompt) async {
+  final uri = Uri.parse("http://10.5.29.253:8000/inference/");
+  final requestBody = jsonEncode({
+    "prompt": prompt,
+    "max_tokens": 128,
+    "temperature": 0.3,
+    "top_p": 0.95,
+    "top_k": 40
+  });
 
-    Map<String, dynamic> request = {
-      "userid": user.userid,
-      "prompt": prompt
-    };
+  try {
+    final response = await http.post(
+      uri,
+      body: requestBody,
+      headers: {"Content-Type": "application/json"},
+    );
 
-    final uri = Uri.parse("http://localhost:8080/chat/v1/completions/");
-    final response = await http.post(uri,
-        body: jsonEncode(request), headers: {"Content-Type": "application/json"});
+    String responseBody = response.body;
+    Map<String, dynamic>? jsonData;
 
-    if (kDebugMode) {
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-    }
+    if (response.statusCode == 307) {
+      // Handle Redirect
+      final redirectedUri = response.headers['location'];
+      if (redirectedUri != null) {
+        final newResponse = await http.post(
+          Uri.parse(redirectedUri),
+          body: requestBody,
+          headers: {"Content-Type": "application/json"},
+        );
 
-    setState(() {
-      if (response.body.isNotEmpty) {
-        _chatHistory.add({
-          "time": DateTime.now(),
-          "message": response.body,
-          "isSender": false,
-        });
+        responseBody = newResponse.body;
       }
-    });
+    }
 
-    // Scroll to the bottom after adding the response
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-    });
+
+    // Parse JSON response
+    try {
+      jsonData = jsonDecode(responseBody);
+    } catch (e) {
+      print('JSON Parsing Error: $e');
+      return;
+    }
+
+    if (jsonData != null && jsonData.containsKey('generated_text')) {
+      String markdownMessage = jsonData['generated_text'].trim(); // Trim whitespace
+
+      if (markdownMessage.isNotEmpty) {
+        // Ensure this is inside a StatefulWidget
+        if (mounted) {
+          setState(() {
+            _chatHistory.add({
+              "time": DateTime.now(),
+              "message": markdownMessage, // Store the markdown-formatted message
+              "isSender": false,
+            });
+          });
+
+          // Ensure scrolling only if there is enough content
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_scrollController.hasClients) {
+              _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+            }
+          });
+        }
+      } else {
+        print("Warning: Empty response received.");
+      }
+    } else {
+      print("Error: 'generated_text' key not found in response.");
+    }
+  } catch (e) {
+    print('Exception: $e');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

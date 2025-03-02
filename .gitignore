@@ -21,6 +21,8 @@ api/chat/model/
 api/src/main/java/com/telmed/api/service/chat/model/**
 
 # Miscellaneous
+.vscode
+.dart_tool
 *.class
 *.log
 *.pyc
